@@ -3,13 +3,17 @@ import dotenv from 'dotenv'
 import db from './config/db';
 import router from './router';
 
+// import models to db
+import './models/Project.model'
+import './models/Task.model'
+
 dotenv.config()
 
 // Connect to db
 export async function connectDB() {
     try {
         await db.authenticate()
-        db.sync()
+        db.sync({force: true})
         console.log('Succesfull connection wit db')
     } catch (error) {
         console.log('Error: in [connectDB]')
@@ -25,6 +29,9 @@ const app = express();
 app.use(express.json())
 
 // connect with router file
-app.use('/', router)
+app.use('/api', router)
 
 export default app
+
+// testmail5@gmail.com
+// TestPass
