@@ -3,10 +3,6 @@ import dotenv from 'dotenv'
 import db from './config/db';
 import router from './router';
 
-// import models to db
-import './models/Project.model'
-import './models/Task.model'
-
 dotenv.config()
 
 // Connect to db
@@ -30,6 +26,8 @@ app.use(express.json())
 
 // connect with router file
 app.use('/api', router)
+
+// app.use(projectsRoutes)
 
 export default app
 

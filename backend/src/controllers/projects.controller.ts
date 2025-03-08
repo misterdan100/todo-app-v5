@@ -1,0 +1,82 @@
+import { Request, Response } from 'express';
+import Project from '../models/Project.model';
+
+export const getProjects = async (req: Request, res: Response) => {
+    try {
+        const projects = await Project.findAll()
+
+        res.status(200).json(projects);
+        return
+    } catch (error) {
+        console.log('[ERROR_GETPROJECT]', error.message)
+        res.status(400).json({error: 'Error getting projects'})
+    }
+};
+
+export const createProject = async (req: Request, res: Response) => {
+    try {
+        // validate if name exists
+        if (!req.body.name) {
+            res.status(500).json({ error: 'A project name is required' });
+            return
+        }
+
+        const newProject = await Project.create({ name: req.body.name.trim() });
+
+        if (!newProject) {
+            res.status(500).json({ error: 'Error creating project' });
+            return
+        }
+
+        res.json(newProject);
+        return
+    } catch (error) {
+        console.log('[CREATEPROJECT]', error.message);
+        res.status(400).json({error: 'Error creating project'});
+    }
+};
+
+export const updateProject = async (req: Request, res: Response) => {
+    try {
+        const { id } = req.params
+        const newName = req.body.name
+
+        if(!id || !newName) {
+            res.status(400).json({error: 'Data to edit project is missing'})
+            return
+        }
+        
+        const project = await Project.findByPk(id)
+        
+        if(!project) {
+            res.status(404).json({error: 'Project not found'})
+            return    
+        }
+
+        project.name = newName.trim()
+        await project.save()
+        
+        res.status(200).json(project)
+
+    } catch (error) {
+        console.log('[ERROR_UPDATEPROJECT]', error.message)
+        res.status(400).json({error: 'Error updating project'})
+    }
+}
+
+export const deleteProject = async (req: Request, res: Response) => {
+    try {
+        const { id } = req.params
+        await Project.destroy({
+            where: {
+                id,
+            }
+        })
+
+        res.status(200).json({message: 'Project deleted'})
+        
+    } catch (error) {
+        console.log('[ERROR_DELETEPROJECT]', error.message)
+        res.status(400).json({error: 'Error deleting project'})
+    }
+}

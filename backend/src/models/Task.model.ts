@@ -1,33 +1,50 @@
-import { DataTypes } from "sequelize";
-import db from "../config/db";
+import { Column, DataType, Default, IsUUID, Model, PrimaryKey, Table } from 'sequelize-typescript'
 
-
-export const Task = db.define('tasks',{
-    id: {
-        type: DataTypes.UUID,
-        defaultValue: DataTypes.UUIDV4,
-        primaryKey: true
-    },
-    name: {
-        type: DataTypes.STRING,
-    },
-    description: {
-        type: DataTypes.STRING
-    },
-    status: {
-        type: DataTypes.STRING,
-        defaultValue: 'pending'
-    },
-    priority: {
-        type: DataTypes.STRING,
-        defaultValue: 'low'
-    },
-    dueDate: {
-        type: DataTypes.DATE
-    },
-    favorite: {
-        type: DataTypes.BOOLEAN,
-        defaultValue: false
-    }
-
+@Table({
+    tableName: 'tasks'
 })
+
+class Task extends Model {
+    @PrimaryKey
+    @IsUUID(4)
+    @Default(DataType.UUIDV4)
+    @Column({
+        type: DataType.UUID
+    })
+    declare id: string
+
+    @Column({
+        type: DataType.STRING(100)
+    })
+    declare name: string
+
+    @Column({
+        type: DataType.STRING()
+    })
+    declare description: string
+
+    @Default('pending')
+    @Column({
+        type: DataType.STRING()
+    })
+    declare status: 'pending' | 'completed' | 'overdue'
+
+    @Default('low')
+    @Column({
+        type: DataType.STRING()
+    })
+    declare priority: 'low' | 'medium' | 'high'
+
+    @Column({
+        type: DataType.DATE()
+    })
+    declare dueDate: Date
+
+    @Default(false)
+    @Column({
+        type: DataType.BOOLEAN()
+    })
+    declare favorite: boolean
+}
+
+export default Task
