@@ -1,9 +1,12 @@
 import { Request, Response } from 'express';
 import Project from '../models/Project.model';
+import Task from '../models/Task.model';
 
 export const getProjects = async (req: Request, res: Response) => {
     try {
-        const projects = await Project.findAll()
+        const projects = await Project.findAll({
+            order: [['name', 'ASC']]
+        })
 
         res.status(200).json(projects);
         return
@@ -12,6 +15,42 @@ export const getProjects = async (req: Request, res: Response) => {
         res.status(400).json({error: 'Error getting projects'})
     }
 };
+
+export const getProjectById = async (req:Request, res: Response) => {
+    try {
+        const { id } = req.params
+
+        const project = await Project.findByPk(id, {
+            include: [Task]
+        })
+        if(!project) {
+            res.status(404).json({error: 'Project not found'})
+            return 
+        }
+
+        res.status(200).json(project)
+        
+    } catch (error) {
+        console.log('[ERROR_GETPROJECTBYID]', error.message)
+        res.status(400).json({error: 'Error getting project byid'}) 
+    }
+}
+
+export const getTasksByProject = async (req: Request, res: Response) => {
+    try {
+        const { id: projectId } = req.params
+
+        const tasks = await Task.findAll({
+            where: {projectId: projectId}
+        })
+
+        res.status(200).json(tasks)
+        
+    } catch (error) {
+        console.log('[ERROR_GETTASKBYID]', error.message)
+        res.status(400).json({error: 'Error getting task by id'})
+    }
+}
 
 export const createProject = async (req: Request, res: Response) => {
     try {

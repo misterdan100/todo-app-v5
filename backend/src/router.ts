@@ -2,6 +2,7 @@ import { Router } from "express";
 import db from "./config/db";
 import projectsRoutes from './routes/projects.routes'
 import tasksRoutes from './routes/tasks.routes'
+import tagsRoutes from './routes/tags.routes'
 
 const router = Router()
 
@@ -20,5 +21,6 @@ router.get('/ping', async (req, res) => {
 
 router.use(projectsRoutes)
 router.use(tasksRoutes)
+router.use(tagsRoutes)
 
 export default router

@@ -1,4 +1,5 @@
-import { Table, Column, Model, DataType, Default, PrimaryKey, IsUUID } from 'sequelize-typescript'
+import { Table, Column, Model, DataType, Default, PrimaryKey, IsUUID, HasMany } from 'sequelize-typescript'
+import Task from './Task.model'
 
 @Table({
     tableName: 'projects',
@@ -19,6 +20,10 @@ class Project extends Model {
         type: DataType.STRING(100)
     })
     declare name: string
+
+    // Relation with tasks
+    @HasMany(() => Task)
+    tasks!: Task[]
 }
 
 export default Project

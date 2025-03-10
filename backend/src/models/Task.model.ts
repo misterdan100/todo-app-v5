@@ -1,4 +1,7 @@
-import { Column, DataType, Default, IsUUID, Model, PrimaryKey, Table } from 'sequelize-typescript'
+import { BelongsTo, BelongsToMany, Column, DataType, Default, ForeignKey, IsUUID, Model, PrimaryKey, Table } from 'sequelize-typescript'
+import Project from './Project.model'
+import Tag from './Tag.model'
+import TaskTag from './TaskTag.model'
 
 @Table({
     tableName: 'tasks'
@@ -45,6 +48,21 @@ class Task extends Model {
         type: DataType.BOOLEAN()
     })
     declare favorite: boolean
+
+    // Clave foranea de project
+    @ForeignKey(() => Project)
+    @Column({
+        type: DataType.UUID
+    })
+    declare projectId: string
+
+    // Relation with Project (one to many)
+    @BelongsTo(() => Project)
+    project?: Project
+
+    // Relation with Tags (many to many)
+    @BelongsToMany(() => Tag, () => TaskTag)
+    tags!: Tag[]
 }
 
 export default Task
