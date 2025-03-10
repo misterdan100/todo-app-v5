@@ -1,5 +1,6 @@
 import { Task } from "@/interface";
-import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { RootState } from "../store";
 
 
 // define types for state
@@ -16,6 +17,20 @@ const initialState: Tasks = {
     filterValue: '',
     filtering: false
 }
+
+// Define a thunk to handle adding tasks and applying filters
+export const addTasksAndFilter = createAsyncThunk(
+    'tasks/addTasksAndFilter', // thunk name
+    async (tasks: Task[], { dispatch, getState }) => {
+        dispatch(addTasks(tasks))  // add tasks throught actions
+        const state = getState() as RootState
+        const filterValue = state.tasks.filterValue
+
+        if(filterValue) {
+            dispatch(selectFilter(filterValue))
+        }
+    }
+)
 
 // define slice 
 const tasksSlice = createSlice({

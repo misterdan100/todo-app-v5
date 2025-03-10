@@ -8,7 +8,8 @@ export const store = configureStore({
     reducer: {
         modal: modalReducer,
         tasks: tasksReducer
-    }
+    },
+    devTools: process.env.NODE_ENV !== 'production',
 })
 
 // tipos TS para usar en hooks personalizados

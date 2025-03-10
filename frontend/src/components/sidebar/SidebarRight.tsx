@@ -5,8 +5,22 @@ import Image from "next/image";
 import { RadialChart } from "./RadialChart";
 import { Button } from "../ui/button";
 import { uiConfig } from "@/config/uiConfig";
+import { useSelector } from "react-redux";
+import { RootState } from "@/store/store";
+import { useMemo } from "react";
 
 export const SidebarRight = () => {
+  const tasks = useSelector( (state: RootState) => state.tasks.tasks)
+
+  const metrics = useMemo(() => {
+    return {
+      total: tasks.length,
+      completed: tasks.reduce( (total, item) => (item.status === 'completed' ? (total + 1) : total), 0),
+      pending: tasks.filter(item => item.status === 'pending').length,
+      overdue: tasks.reduce( (total, item) => (item.status === 'overdue' ? total + 1 : total), 0)
+    }
+  },[tasks])
+
   return (
     <div className="w-0 hidden md:w-[20rem] h-full md:flex flex-col overflow-y-auto pt-6">
       <div className="mx-6 ">
@@ -44,27 +58,7 @@ export const SidebarRight = () => {
             <p className="relative flex gap-2 pl-4">
               <span className="absolute h-[80%] w-[0.2rem] left-[1px] top-1/2 translate-y-[-50%] bg-purple-500 rounded-[5px]"></span>
               <span className="font-medium text-4xl text-[#333]">
-                6
-              </span>
-            </p> 
-          </div>
-
-          <div className="text-gray-400">
-            <p>In Progress:</p>
-            <p className="relative flex gap-2 pl-4">
-              <span className="absolute h-[80%] w-[0.2rem] left-[1px] top-1/2 translate-y-[-50%] bg-teal-500 rounded-[5px]"></span>
-              <span className="font-medium text-4xl text-[#333]">
-                5
-              </span>
-            </p> 
-          </div>
-
-          <div className="text-gray-400">
-            <p>Open Tasks:</p>
-            <p className="relative flex gap-2 pl-4">
-              <span className="absolute h-[80%] w-[0.2rem] left-[1px] top-1/2 translate-y-[-50%] bg-orange-500 rounded-[5px]"></span>
-              <span className="font-medium text-4xl text-[#333]">
-                5
+              {metrics.total}
               </span>
             </p> 
           </div>
@@ -72,9 +66,29 @@ export const SidebarRight = () => {
           <div className="text-gray-400">
             <p>Completed:</p>
             <p className="relative flex gap-2 pl-4">
+              <span className="absolute h-[80%] w-[0.2rem] left-[1px] top-1/2 translate-y-[-50%] bg-teal-500 rounded-[5px]"></span>
+              <span className="font-medium text-4xl text-[#333]">
+                {metrics.completed}
+              </span>
+            </p> 
+          </div>
+
+          <div className="text-gray-400">
+            <p>Pending:</p>
+            <p className="relative flex gap-2 pl-4">
+              <span className="absolute h-[80%] w-[0.2rem] left-[1px] top-1/2 translate-y-[-50%] bg-orange-500 rounded-[5px]"></span>
+              <span className="font-medium text-4xl text-[#333]">
+              {metrics.pending}
+              </span>
+            </p> 
+          </div>
+
+          <div className="text-gray-400">
+            <p>Overdue:</p>
+            <p className="relative flex gap-2 pl-4">
               <span className="absolute h-[80%] w-[0.2rem] left-[1px] top-1/2 translate-y-[-50%] bg-lime-500 rounded-[5px]"></span>
               <span className="font-medium text-4xl text-[#333]">
-                1
+              {metrics.overdue}
               </span>
             </p> 
           </div>

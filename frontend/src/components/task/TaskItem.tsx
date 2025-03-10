@@ -8,12 +8,18 @@ import { motion } from "motion/react";
 import { IoCreate, IoStar, IoTrashBin } from "react-icons/io5";
 import useSWR, { mutate } from "swr";
 import { useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { AppDispatch, RootState } from "@/store/store";
+import { addTasksAndFilter } from "@/store/tasks/tasksSlice";
 
 type Props = {
   task: Task;
 };
 
 export const TaskItem = ({ task }: Props) => {
+  const tasksState = useSelector( (state: RootState) => state.tasks.tasks)
+  const dispatch = useDispatch<AppDispatch>()
+
   const { id, name, description, dueDate, priority, favorite: taskFav } = task;
   const [favorite, setFavorite] = useState(taskFav);
 
@@ -21,7 +27,16 @@ export const TaskItem = ({ task }: Props) => {
     try {
       await mutate(
         `/tasks/${id}`,
-        axios.put(`/tasks/${id}/favorite`).then((res) => res.data as Task),
+        axios.put(`/tasks/${id}/favorite`).then((res) => {
+          dispatch(addTasksAndFilter(tasksState.map(task => {
+            if(task.id === id) {
+              task.favorite = !task.favorite
+            }
+            return task
+          })))
+
+          return res.data as Task
+        }),
         {
           optimisticData: setFavorite((_prev) => !_prev),
           rollbackOnError: true,
@@ -54,7 +69,7 @@ export const TaskItem = ({ task }: Props) => {
 
   return (
     <motion.div
-      className="h-36 px-4 py-3 flex flex-col gap-4 shadow-sm bg-[#f9f9f9] rounded-lg border-2 border-white"
+      className="h-44 px-4 py-3 flex flex-col gap-4 shadow-sm bg-[#f9f9f9] rounded-lg border-2 border-white"
       variants={item}
     >
       <div>

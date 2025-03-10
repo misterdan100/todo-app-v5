@@ -1,16 +1,30 @@
 'use client'
 
-import { AppDispatch } from "@/store/store"
+import { AppDispatch, RootState } from "@/store/store"
 import { cleanFilter, selectFilter } from "@/store/tasks/tasksSlice"
-import { useState } from "react"
-import { useDispatch } from "react-redux"
+import { useEffect, useState } from "react"
+import { useDispatch, useSelector } from "react-redux"
+
+const filterDictionary: Record<string, number> = {
+  'low': 1,
+  'medium': 2,
+  'high': 3,
+  'favorite': 4
+}
 
 export const FilterButtons = () => {
   const [activeIndex, setActiveIndex] = useState(0)
+  const filterValue = useSelector( (state: RootState) => state.tasks.filterValue)
   const dispatch = useDispatch<AppDispatch>()
 
   
   const filters = ['All', 'Low', 'Medium', 'High', 'Favorite']
+
+  useEffect(() => {
+    if(filterValue !== 'all' || filterValue) {
+      setActiveIndex(filterDictionary[filterValue])
+    }
+  }, [])
 
   const handleSelectFilter = (filter: string, index: number) => {
     setActiveIndex(index)

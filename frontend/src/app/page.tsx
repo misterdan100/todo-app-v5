@@ -9,7 +9,7 @@ import { Task } from '@/interface';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch, RootState } from '@/store/store';
 import { switchModal } from '@/store/ui/modalSlice';
-import { addTasks } from '@/store/tasks/tasksSlice';
+import { addTasks, addTasksAndFilter } from '@/store/tasks/tasksSlice';
 
 
 export default function Home() {
@@ -19,7 +19,7 @@ export default function Home() {
   const dispatch = useDispatch<AppDispatch>()
 
   const fetcher = (url: string) => axios.get(url).then(res => {
-    dispatch(addTasks(res.data)) // update tasks state
+    dispatch(addTasksAndFilter(res.data)) // update tasks state
     return res.data as Task[]
   })
   const { data, error } = useSWR('/tasks', fetcher)

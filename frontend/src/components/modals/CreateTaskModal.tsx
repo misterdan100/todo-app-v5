@@ -118,7 +118,11 @@ export function CreateTaskModal() {
   };
 
   return (
-    <Dialog onOpenChange={() => dispatch(switchModal(!isOpen))} open={isOpen} >
+    <Dialog 
+      // onOpenChange={() => dispatch(switchModal(!isOpen))} 
+      onOpenChange={(open) => dispatch(switchModal(open))}
+      open={isOpen} 
+    >
       <DialogTrigger asChild>
         <Button
           className="hover:bg-violet-500 bg-violet-600 text-white"
