@@ -39,8 +39,9 @@ export const Sidebar = () => {
 
   return (
     <div className="basis-[5rem] sm:flex flex-col hidden">
-      <Link href='/' className="flex items-center justify-center h-[5rem]">
-        <Image src="/logo.png" width={28} height={28} alt="logo" />
+      <Link href='/' className="flex items-center justify-center h-[5rem] w-[5rem]">
+        <Image 
+        src="/logo.png" width={28} height={28} alt="logo" />
       </Link>
 
       <div className="flex flex-col items-center flex-1 mt-8">

@@ -6,6 +6,7 @@ import { IoLogoGithub, IoMoon, IoPersonSharp } from "react-icons/io5";
 import Link from "next/link";
 import styled from "styled-components";
 import Image from "next/image";
+import { CreateTaskModal } from "../modals/CreateTaskModal";
 
 const { mainColor } = uiConfig;
 
@@ -26,7 +27,7 @@ export const Header = () => {
     <header className="flex flex-col items-center justify-between w-full gap-4 px-6 my-4 md:flex-row">
       {/* Title, name and tasks */}
       <div className="flex items-center gap-2 text-center md:text-start">
-        <Link href="/" className=" sm:hidden flex items-center justify-center h-[5rem]">
+        <Link href="/" className="flex items-center justify-center sm:hidden">
           <Image src="/logo.png" width={28} height={28} alt="logo" />
         </Link>
         <div>
@@ -60,9 +61,7 @@ export const Header = () => {
 
       {/* Button add tasks */}
       <div className=" flex items-center gap-4 md:gap-[10.4rem] ">
-        <Button className="" onClick={() => console.log("Open modal")}>
-          {userId ? "Add a new Task" : "Login / Register"}
-        </Button>
+      <CreateTaskModal />
 
         <div className="flex items-center gap-4">
           <StyledLink

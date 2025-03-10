@@ -1,13 +1,21 @@
 'use client'
 
+import useSWR from 'swr'
+import axios from '@/config/axios'
 import { TaskItem } from "@/components";
-import { Button } from "@/components/ui/button";
 import { container, item } from "@/utils";
-import { motion } from 'motion/react'
+import { motion } from 'motion/react';
+import { Task } from '@/interface';
+
+const fetcher = (url: string) => axios.get(url).then(res => res.data as Task[])
 
 
 export default function Home() {
-  return (
+  const { data, error } = useSWR('/tasks', fetcher)
+
+  if(!data) return <p>Loading tasks</p>
+
+  if(data) return (
     <>
     {/* Title */}
       <div className="flex items-center justify-between">
@@ -22,8 +30,8 @@ export default function Home() {
         initial="hidden"
         animate="visible"
       >
-        {Array.from({length: 15},(_, index) => (
-          <TaskItem />
+        {data?.map( task => (
+          <TaskItem key={task.id} task={task} />
         ))}
         
 

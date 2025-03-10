@@ -4,3 +4,5 @@ export * from './sidebar/SidebarRight'
 export * from './sidebar/RadialChart'
 
 export * from './task/TaskItem'
+
+export * from './modals/CreateTaskModal'
