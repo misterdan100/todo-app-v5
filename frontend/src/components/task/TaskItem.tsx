@@ -48,6 +48,10 @@ export const TaskItem = ({ task }: Props) => {
     }
   }
 
+  const handleCheck = async () => {
+    
+  }
+
   return (
     <motion.div
       className="h-36 px-4 py-3 flex flex-col gap-4 shadow-sm bg-[#f9f9f9] rounded-lg border-2 border-white"

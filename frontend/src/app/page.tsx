@@ -1,16 +1,27 @@
 'use client'
 
-import useSWR from 'swr'
-import axios from '@/config/axios'
-import { TaskItem } from "@/components";
+import useSWR from 'swr';
+import axios from '@/config/axios';
+import { FilterButtons, TaskItem } from "@/components";
 import { container, item } from "@/utils";
 import { motion } from 'motion/react';
 import { Task } from '@/interface';
-
-const fetcher = (url: string) => axios.get(url).then(res => res.data as Task[])
+import { useDispatch, useSelector } from 'react-redux';
+import { AppDispatch, RootState } from '@/store/store';
+import { switchModal } from '@/store/ui/modalSlice';
+import { addTasks } from '@/store/tasks/tasksSlice';
 
 
 export default function Home() {
+  const tasksState = useSelector( (state: RootState) => state.tasks.tasks)
+  const filteredTasks = useSelector( (state: RootState) => state.tasks.filteredTasks)
+  const isfiltering = useSelector( (state: RootState) => state.tasks.filtering)
+  const dispatch = useDispatch<AppDispatch>()
+
+  const fetcher = (url: string) => axios.get(url).then(res => {
+    dispatch(addTasks(res.data)) // update tasks state
+    return res.data as Task[]
+  })
   const { data, error } = useSWR('/tasks', fetcher)
 
   if(!data) return <p>Loading tasks</p>
@@ -18,9 +29,9 @@ export default function Home() {
   if(data) return (
     <>
     {/* Title */}
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col items-center justify-between sm:flex-row gap-2">
         <h1 className="text-2xl font-bold">All Tasks</h1>
-        <h3 className="font-bold">Filters.. components</h3>
+        <FilterButtons />
       </div>
 
       {/* Content... */}
@@ -30,7 +41,9 @@ export default function Home() {
         initial="hidden"
         animate="visible"
       >
-        {data?.map( task => (
+        { isfiltering ? filteredTasks.map( task => (
+          <TaskItem key={task.id} task={task} />
+        )) : tasksState.map( task => (
           <TaskItem key={task.id} task={task} />
         ))}
         
@@ -38,6 +51,7 @@ export default function Home() {
         <motion.button 
           className="w-full py-2 text-lg font-medium text-gray-500 transition duration-200 ease-in-out border-2 border-gray-300 border-dashed rounded-md h-36 hover:bg-gray-200 hover:border-none"
           variants={item}
+          onClick={() => dispatch(switchModal(true))}
         >
           Add New Task
         </motion.button>

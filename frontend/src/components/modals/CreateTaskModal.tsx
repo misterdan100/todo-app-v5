@@ -9,9 +9,7 @@ import {
   DialogDescription,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
-  DialogClose,
-
+  DialogTrigger
 } from "@/components/ui/dialog";
 import {
   Form,
@@ -48,7 +46,9 @@ import { IoStarSharp } from "react-icons/io5";
 import clsx from "clsx";
 import { useEffect, useState } from "react";
 import { mutate } from "swr";
-import { uiConfig } from "@/config/uiConfig";
+import { useDispatch, useSelector } from "react-redux";
+import { AppDispatch, RootState } from "@/store/store";
+import { switchModal } from "@/store/ui/modalSlice";
 
 const formSchema = z.object({
   name: z
@@ -63,7 +63,11 @@ const formSchema = z.object({
   status: z.enum(["completed", "pending", "overdue"]),
 });
 
+// function componente ////////////////////////////////////////////////////////////
 export function CreateTaskModal() {
+  const isOpen = useSelector( (state: RootState) => state.modal.isOpen)
+  const dispatch = useDispatch<AppDispatch>()
+
   const [projects, setProjects] = useState<{ id: string; name: string }[]>([]);
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -104,14 +108,17 @@ export function CreateTaskModal() {
         }
       );
 
+      dispatch(switchModal(false))
+
       form.reset();
+      console.log('task created')
     } catch (error) {
       console.error("Error creating task:", error);
     }
   };
 
   return (
-    <Dialog onOpenChange={() => form.reset()}>
+    <Dialog onOpenChange={() => dispatch(switchModal(!isOpen))} open={isOpen} >
       <DialogTrigger asChild>
         <Button
           className="hover:bg-violet-500 bg-violet-600 text-white"
@@ -309,14 +316,14 @@ export function CreateTaskModal() {
               )}
             />
 
-            <DialogTrigger asChild>
+
               <Button 
               
               className="bg-green-600 hover:bg-green-500" type="submit"
               >
                 Create Task
               </Button>
-            </DialogTrigger>
+
           </form>
         </Form>
       </DialogContent>
