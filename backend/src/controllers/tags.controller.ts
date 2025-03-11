@@ -2,6 +2,7 @@ import { Request, Response} from 'express'
 import Tag from '../models/Tag.model'
 import { seedData } from '../data/seed_data'
 import Task from '../models/Task.model'
+import { generateRandomReadableColor } from '../utils/genRandomColor'
 
 export const getTags = async (req: Request, res: Response ) => {
     try {
@@ -30,6 +31,20 @@ export const getTagById = async (req: Request, res: Response ) => {
     } catch (error) {
         console.log('[ERROR_GETTAGBYID]', error.message)
         res.status(400).json({error: 'Error getting tag by Id'})
+    }
+}
+
+export const getTagsWithTasks = async (req: Request, res: Response) => {
+    try {
+        const tags = await Tag.findAll({
+            include: [Task]
+        })
+
+        res.status(200).json(tags)
+        
+    } catch (error) {
+        console.log('[ERROR_GETTAGSWITHTASKS]', error.message)
+        res.status(400).json({error: 'Error getting tags with tasks'})
     }
 }
 
@@ -83,7 +98,10 @@ export const getTasksByTag = async (req: Request, res: Response) => {
 
 export const seedTags = async (req, res: Response) => {
     try {
-        const seedTags = seedData.tags.map(item => ({name: item}))
+
+        await Tag.destroy({where: {}})
+
+        const seedTags = seedData.tags.map(item => ({name: item, color: generateRandomReadableColor()}))
 
         await Tag.bulkCreate(seedTags)
 

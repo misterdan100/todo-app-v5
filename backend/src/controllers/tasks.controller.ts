@@ -7,6 +7,17 @@ import TaskTag from '../models/TaskTag.model'
 
 export const getTasks = async (req: Request, res: Response) => {
     try {
+
+        if(req.query.filter) {
+            const tasks = await Task.findAll({
+                where: {status: req.query.filter},
+                order: [['createdAt', 'DESC']]
+            })
+
+            res.status(200).json(tasks)
+            return
+        }
+
         const tasks = await Task.findAll({
             order: [['createdAt', 'DESC']]
         })

@@ -21,6 +21,11 @@ class Tag extends Model {
     })
     declare name: string
 
+    @Column({
+        type: DataType.STRING(7)
+    })
+    color: string
+
     // Relation with task (many to many)
     @BelongsToMany(() => Task, () => TaskTag)
     tasks!: Task[]
