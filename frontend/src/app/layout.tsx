@@ -8,7 +8,10 @@ import ClientProvider from "@/store/ClientProvider";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "Mister ToDo App | Next.js Node.js Express.js PostgreSQL",
+  title: {
+    template: '%s | Next.js Node.js Express.js PostgreSQL', //default title
+    default: "Mister ToDo App" // default replace to %s
+  },
   description: "Todo app with MERN Stack and Next.js",
 };
 

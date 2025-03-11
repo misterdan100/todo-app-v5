@@ -13,6 +13,13 @@ export type Task = {
     updatedAt: string
 }
 
+export type Tag = {
+    id: string,
+    name: string,
+    color: string,
+    tasks?: Task[]
+}
+
 export type TaskFormData = Pick<Task, 'name' | 'description' | 'dueDate' | 'favorite' | 'priority' | 'status' | 'projectId'>
 
 export type Priority = 'low' | 'medium' | 'high'

@@ -4,7 +4,7 @@ import { uiConfig } from "@/config/uiConfig";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { IoCheckboxOutline, IoGridOutline } from "react-icons/io5";
+import { IoCheckboxOutline, IoGridOutline, IoPricetagsOutline } from "react-icons/io5";
 
 export const Sidebar = () => {
   const { mainColor } = uiConfig;
@@ -34,6 +34,11 @@ export const Sidebar = () => {
       icon: <IoCheckboxOutline color={getSelectedColor("/overdue")} />,
       title: "Overdue",
       link: "/overdue",
+    },
+    {
+      icon: <IoPricetagsOutline color={getSelectedColor("/tags")} />,
+      title: "Tags",
+      link: "/tags",
     },
   ];
 

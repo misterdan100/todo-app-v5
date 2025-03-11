@@ -49,6 +49,7 @@ import { mutate } from "swr";
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "@/store/store";
 import { switchModal } from "@/store/ui/modalSlice";
+import { useRouter, useSearchParams } from "next/navigation";
 
 const formSchema = z.object({
   name: z
@@ -65,6 +66,8 @@ const formSchema = z.object({
 
 // function componente ////////////////////////////////////////////////////////////
 export function CreateTaskModal() {
+  const router = useRouter()
+
   const isOpen = useSelector( (state: RootState) => state.modal.isOpen)
   const dispatch = useDispatch<AppDispatch>()
 
@@ -101,17 +104,20 @@ export function CreateTaskModal() {
   const onSubmit = async (formData: z.infer<typeof formSchema>) => {
     try {
       await mutate(
-        `/tasks`,
-        axios.post("tasks", formData).then((res) => console.log(res)),
+        '/tasks',
+        axios.post("/tasks", formData).then(() => {
+          mutate('filteredTasks')
+        }),
         {
           revalidate: true,
         }
       );
 
-      dispatch(switchModal(false))
-
+      
+      
       form.reset();
-      console.log('task created')
+      router.refresh()
+      dispatch(switchModal(false))
     } catch (error) {
       console.error("Error creating task:", error);
     }
