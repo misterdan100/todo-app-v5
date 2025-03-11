@@ -1,5 +1,7 @@
 import { Request, Response} from 'express'
 import Tag from '../models/Tag.model'
+import { seedData } from '../data/seed_data'
+import Task from '../models/Task.model'
 
 export const getTags = async (req: Request, res: Response ) => {
     try {
@@ -58,4 +60,39 @@ export const deleteTag = async (req: Request, res: Response) => {
         console.log('[ERROR_DETETAG]', error.message)
         res.status(500).json({error: 'Error deleting tag'})
     }
+}
+
+export const getTasksByTag = async (req: Request, res: Response) => {
+    try {
+        const tagId = req.params.id
+
+        const tasks = await Task.findAll({
+            include: [{
+                model: Tag,
+                where: { id: tagId }
+            }]
+        })
+
+        res.status(200).json(tasks)
+        
+    } catch (error) {
+        console.log('[ERROR_GETTASKSBYTAGS]', error.message)
+        res.status(500).json({error: 'Error getting tasks by tag'})
+    }
+}
+
+export const seedTags = async (req, res: Response) => {
+    try {
+        const seedTags = seedData.tags.map(item => ({name: item}))
+
+        await Tag.bulkCreate(seedTags)
+
+        const tags = await Tag.findAll()
+        res.status(200).json(tags)
+        
+    } catch (error) {
+        console.log('[ERROR_SEEDTAGS]', error.message)
+        res.status(500).json({error: 'Error seeding tags'})
+    }
+
 }

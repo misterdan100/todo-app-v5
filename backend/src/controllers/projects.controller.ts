@@ -1,6 +1,7 @@
 import { Request, Response } from 'express';
 import Project from '../models/Project.model';
 import Task from '../models/Task.model';
+import { seedData } from '../data/seed_data';
 
 export const getProjects = async (req: Request, res: Response) => {
     try {
@@ -117,5 +118,20 @@ export const deleteProject = async (req: Request, res: Response) => {
     } catch (error) {
         console.log('[ERROR_DELETEPROJECT]', error.message)
         res.status(400).json({error: 'Error deleting project'})
+    }
+}
+
+export const seedProjects = async (req: Request, res: Response) => {
+    try {
+        const projects = seedData.projects.map(item => ({name: item}))
+
+        await Project.bulkCreate(projects)
+        const projectsDB = await Project.findAll()
+
+        res.status(200).json(projectsDB)
+        
+    } catch (error) {
+        console.log('[ERROR_SEEDPROJECTS]', error.message)
+        res.status(500).json({error: 'Error seeding projects'})
     }
 }
