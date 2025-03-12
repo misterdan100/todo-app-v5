@@ -4,3 +4,9 @@ export const uiConfig = {
     contrastColor: '#e76e50',
     contrastColorDark: '#e88c30',
 }
+
+export const statusColors = {
+    pending: '#FBC334',
+    completed: '#17C181',
+    overdue: '#E04F6A',
+}

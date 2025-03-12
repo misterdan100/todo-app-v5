@@ -1,6 +1,7 @@
 import { HeaderPage } from "@/components";
-import { ShowTasksSection } from "@/components/task/ShowTasksSection";
+import { useTasks } from "@/hooks";
 import { Metadata } from "next";
+import { CompletedPageSection } from "./CompletedPageSection";
 
 export const metadata: Metadata = {
     title: 'Completed Tasks',
@@ -15,7 +16,7 @@ export default function CompletedPage() {
     {/* Title */}
       <HeaderPage title='Completed Tasks' />
 
-      <ShowTasksSection page='completed'/>
+      <CompletedPageSection />
 
     </>
   )

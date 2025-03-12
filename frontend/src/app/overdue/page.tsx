@@ -1,6 +1,6 @@
 import { HeaderPage } from "@/components";
-import { ShowTasksSection } from "@/components/task/ShowTasksSection";
 import { Metadata } from "next";
+import { OverduePageSection } from "./OverduePageSection";
 
 export const metadata: Metadata = {
     title: 'Overdue Tasks',
@@ -15,7 +15,7 @@ export default function OverduePage() {
     {/* Title */}
       <HeaderPage title='Overdue Tasks' />
 
-      <ShowTasksSection page='overdue'/>
+      <OverduePageSection />
 
     </>
   )

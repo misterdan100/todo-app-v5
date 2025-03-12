@@ -1,4 +1,4 @@
-import { Spinner } from "./spinner";
+import { Spinner } from "./Spinner";
 
 export const LoadingSpinner = ({message = 'Loding data...'}: {message?: string}) => {
   return (

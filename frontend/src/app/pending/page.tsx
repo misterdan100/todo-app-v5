@@ -1,6 +1,6 @@
 import { HeaderPage } from "@/components";
-import { ShowTasksSection } from "@/components/task/ShowTasksSection";
 import { Metadata } from "next";
+import { PendingPageSection } from "./PendingPageSection";
 
 export const metadata: Metadata = {
     title: 'Pending Tasks',
@@ -15,7 +15,7 @@ export default function PendingPage() {
     {/* Title */}
       <HeaderPage title='Pending Tasks' />
 
-      <ShowTasksSection page='pending'/>
+      <PendingPageSection />
     </>
   )
 }

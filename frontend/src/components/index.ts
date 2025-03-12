@@ -10,4 +10,6 @@ export * from './modals/CreateTaskModal'
 
 export * from './filters/FilterButtons'
 
-export * from './spinner/spinner'
+export * from './spinner/Spinner'
+
+export * from './tag/TagCard'

@@ -13,14 +13,8 @@ import useSWR from "swr";
 import { Task } from "@/interface";
 
 export const SidebarRight = () => {
-  const [tasks, setTasks] = useState<Task[]>([])
 
-  const fetcher = (url: string) => axios(url).then( res => {
-    setTasks(res.data as Task[])
-    return res.data as Task[]
-  })
-
-  const {data, error} = useSWR('/tasks', fetcher)
+  const tasks = useSelector( (state: RootState) => state.tasks.allTasks)
 
   const metrics = useMemo(() => {
     return {
