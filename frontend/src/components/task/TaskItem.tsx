@@ -2,47 +2,65 @@
 
 import { Task } from "@/interface";
 import axios from "@/config/axios";
-import { item } from "@/utils";
+import { capitalizeText, formatDate, item } from "@/utils";
 import clsx from "clsx";
 import { motion } from "motion/react";
-import { IoCreate, IoStar, IoTrashBin } from "react-icons/io5";
-import useSWR, { mutate } from "swr";
+import {
+  IoCheckmarkCircle,
+  IoCreate,
+  IoEllipseOutline,
+  IoStar,
+  IoTrashBin,
+} from "react-icons/io5";
+import { mutate } from "swr";
 import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "@/store/store";
-import { addTasksAndFilter } from "@/store/tasks/tasksSlice";
+import { addTasksToShow } from "@/store/tasks/tasksSlice";
+import styled from "styled-components";
+import { priorityColors, uiConfig } from "@/config/uiConfig";
+import { deleteTask, switchFavorite } from "@/api";
+import { useRouter } from "next/navigation";
 
 type Props = {
   task: Task;
 };
 
-export const TaskItem = ({ task }: Props) => {
-  const tasksState = useSelector( (state: RootState) => state.tasks.tasks)
-  const dispatch = useDispatch<AppDispatch>()
+// priority color text
+// with $ - these props won't be passed to the DOM element:
+const StyledPriorityP = styled.p<{ $priorityColor: string }>`
+  color: ${(props) => props.$priorityColor};
+`;
 
-  const { id, name, description, dueDate, priority, favorite: taskFav } = task;
-  const [favorite, setFavorite] = useState(taskFav);
+// Component ---------------------------------------------
+export const TaskItem = ({ task }: Props) => {
+  const router = useRouter()
+
+  const { id, name, description, dueDate, priority, favorite: taskFav, status } = task;
+  const [favorite, setFavorite] = useState(task.favorite);
+  const [ isCompleted, setIsCompleted ] = useState( status === 'completed' ? true : false)
+
+  // redux context
+  const tasksToShow = useSelector(
+    (state: RootState) => state.tasks.tasksToShow
+  );
+  const dispatch = useDispatch<AppDispatch>();
+
+
+  // get priority color or default
+  const priorityColor = priorityColors[priority] || "#000000";
 
   const handleChangeFavorite = async () => {
     try {
-      await mutate(
-        `/tasks/${id}`,
-        axios.put(`/tasks/${id}/favorite`).then((res) => {
-          dispatch(addTasksAndFilter(tasksState.map(task => {
-            if(task.id === id) {
-              task.favorite = !task.favorite
-            }
-            return task
-          })))
+      const res = await switchFavorite({ taskId: id });
 
-          return res.data as Task
-        }),
-        {
-          optimisticData: setFavorite((_prev) => !_prev),
-          rollbackOnError: true,
-          revalidate: true,
-        }
-      );
+      // optimistic update
+      setFavorite((prev) => !prev);
+
+      if (!res) {
+        // return the previews favrotie value if update db fail
+        setFavorite((prev) => !prev);
+      }
     } catch (error) {
       console.error("Error toggling favorite status:", error);
     }
@@ -50,22 +68,16 @@ export const TaskItem = ({ task }: Props) => {
 
   const handleDeleteTask = async () => {
     try {
-        await mutate(`/tasks`, 
-            axios.delete(`/tasks/${id}`).then(() => {
-                return axios.get('/tasks').then(res => res.data)
-            }),{
-                rollbackOnError: true,
-                revalidate: true,
-            }
-        )
+      const res = await deleteTask({taskId: id})
+      if( res ) {
+        router.refresh()
+      }
     } catch (error) {
-        console.error("Error deleting task:", error);
+      console.error("Error deleting task:", error);
     }
-  }
+  };
 
-  const handleCheck = async () => {
-    
-  }
+  const handleCheck = async () => {};
 
   return (
     <motion.div
@@ -79,13 +91,19 @@ export const TaskItem = ({ task }: Props) => {
 
       {/* Footer card */}
       <div className="flex items-center justify-between mt-auto">
-        <p className="text-sm text-gray-400">2 days ago</p>
-        <p className="text-sm font-bold text-yellow-500">{priority}</p>
+        {dueDate && (
+          <p className="text-sm text-gray-400">{formatDate(dueDate)}</p>
+        )}
+        <StyledPriorityP
+          $priorityColor={priorityColor}
+          className="text-sm font-bold text-yellow-500"
+        >
+          {capitalizeText(priority)}
+        </StyledPriorityP>
 
         {/* Action Icons */}
         <div className="flex items-center gap-3 text-xl text-[1.2rem]">
           <button
-            // className='text-gray-400'
             className={clsx({
               "text-gray-400": !favorite,
               "text-yellow-400": favorite,
@@ -95,15 +113,16 @@ export const TaskItem = ({ task }: Props) => {
             <IoStar />
           </button>
           <button
-            className="text-blue-400"
+            className="text-blue-400 hover:scale-125 transition-transform "
             onClick={() => console.log("edit button")}
           >
-            <IoCreate />
+            {isCompleted ? (
+              <IoCheckmarkCircle />
+            ) : (
+              <IoEllipseOutline />
+            )}
           </button>
-          <button
-            className="text-red-400"
-            onClick={handleDeleteTask}
-          >
+          <button className="text-red-400" onClick={handleDeleteTask}>
             <IoTrashBin />
           </button>
         </div>

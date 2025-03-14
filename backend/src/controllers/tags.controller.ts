@@ -16,6 +16,27 @@ export const getTags = async (req: Request, res: Response ) => {
     }
 }
 
+export const getTagByName = async (req: Request, res: Response ) => {
+    try {
+        const { tagName } = req.params
+        
+        const tag = await Tag.findOne({
+            where: {name: tagName}
+        })
+
+        if(!tag) {
+            res.status(404).json({error: 'Tag not found'})
+            return
+        }
+
+        res.status(200).json(tag)
+        
+    } catch (error) {
+        console.log('[ERROR_GETTAGBYNAME]', error.message)
+        res.status(400).json({error: 'Error getting tag by Name'})
+    }
+}
+
 export const getTagById = async (req: Request, res: Response ) => {
     try {
         const { id } = req.params
@@ -79,16 +100,23 @@ export const deleteTag = async (req: Request, res: Response) => {
 
 export const getTasksByTag = async (req: Request, res: Response) => {
     try {
-        const tagId = req.params.id
+        const name = req.params.name
+
+        const tag = await Tag.findOne({
+            where: {name}
+        })
 
         const tasks = await Task.findAll({
             include: [{
                 model: Tag,
-                where: { id: tagId }
+                where: { name: name }
             }]
         })
 
-        res.status(200).json(tasks)
+        res.status(200).json({
+            tag: tag,
+            tasks: tasks
+        })
         
     } catch (error) {
         console.log('[ERROR_GETTASKSBYTAGS]', error.message)

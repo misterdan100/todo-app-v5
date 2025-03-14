@@ -6,18 +6,14 @@ import { motion } from "motion/react";
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "@/store/store";
 import { switchModal } from "@/store/ui/modalSlice";
-import {
-  cleanTasks
-} from "@/store/tasks/tasksSlice";
-import { useEffect } from "react";
 import { Task } from "@/interface";
 
 type Props = {
-  tasks: Task[]
+  tasks?: Task[]
 };
 
 export const ShowTasksSection = ({ tasks }: Props) => {
-  // call to redux states and actions
+  const tasksToShow = useSelector((state: RootState) => state.tasks.tasksToShow);
   const isfiltering = useSelector((state: RootState) => state.tasks.filtering);
   const filteredTasks = useSelector((state: RootState) => state.tasks.filteredTasks);
   const dispatch = useDispatch<AppDispatch>();  
@@ -33,7 +29,7 @@ export const ShowTasksSection = ({ tasks }: Props) => {
       >
         {isfiltering
           ? filteredTasks.map((task) => <TaskItem key={task.id} task={task} />)
-          : tasks?.map((task) => <TaskItem key={task.id} task={task} />)}
+          : tasksToShow?.map((task) => <TaskItem key={task.id} task={task} />)}
 
         <motion.button
           className="w-full py-2 text-lg font-medium text-gray-500 transition duration-200 ease-in-out border-2 border-gray-300 border-dashed rounded-md h-36 hover:bg-gray-200 hover:border-none"

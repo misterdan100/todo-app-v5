@@ -3,6 +3,7 @@ import db from "./config/db";
 import projectsRoutes from './routes/projects.routes'
 import tasksRoutes from './routes/tasks.routes'
 import tagsRoutes from './routes/tags.routes'
+import { clearAndSeed } from "./controllers/seed.controller";
 
 const router = Router()
 
@@ -17,6 +18,8 @@ router.get('/ping', async (req, res) => {
     const result = await db.query('SELECT NOW()')
     res.send(result[0][0])
 })
+
+router.get('/seedData', clearAndSeed)
 
 
 router.use(projectsRoutes)

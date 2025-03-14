@@ -4,7 +4,7 @@ import { uiConfig } from "@/config/uiConfig";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { IoCheckboxOutline, IoGridOutline, IoPricetagsOutline } from "react-icons/io5";
+import { IoAlarmOutline, IoCheckboxOutline, IoGridOutline, IoPricetagsOutline, IoTrendingUp } from "react-icons/io5";
 
 export const Sidebar = () => {
   const { mainColor } = uiConfig;
@@ -26,12 +26,12 @@ export const Sidebar = () => {
       link: "/completed",
     },
     {
-      icon: <IoCheckboxOutline color={getSelectedColor("/pending")} />,
+      icon: <IoTrendingUp color={getSelectedColor("/pending")} />,
       title: "Pending",
       link: "/pending",
     },
     {
-      icon: <IoCheckboxOutline color={getSelectedColor("/overdue")} />,
+      icon: <IoAlarmOutline color={getSelectedColor("/overdue")} />,
       title: "Overdue",
       link: "/overdue",
     },

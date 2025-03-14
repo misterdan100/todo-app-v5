@@ -1,22 +1,20 @@
 "use client";
 
-import { HeaderPage } from "@/components";
+export const revalidate = 0
+
+import { ErrorGetData, HeaderPage } from "@/components";
 import { LoadingSpinner } from "@/components/spinner/LoadingSpinner";
 import { ShowTasksSection } from "@/components/task/ShowTasksSection";
 import { useTasks } from "@/hooks";
-import { AppDispatch } from "@/store/store";
-import { addTasksAndFilter, addTasksToShow } from "@/store/tasks/tasksSlice";
-import { useDispatch } from "react-redux";
 
 export default function Home() {
-  const { tasks, error, isLoading } = useTasks();
-  const dispatch = useDispatch<AppDispatch>();
+  const { tasks, error, isLoading, mutate, isValidating } = useTasks({ showTasks: true });
 
-  if (isLoading) return <LoadingSpinner message="Loding tasks..." />;
+  if (isLoading || isValidating) return <LoadingSpinner message="Loding tasks..." />;
+
+  if(error) return <ErrorGetData message="Error getting tasks, please refresh the page."/>
 
   if (tasks) {
-    dispatch(addTasksAndFilter(tasks));
-
     return (
       <>
         <HeaderPage title="All Tasks" />

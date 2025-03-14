@@ -10,7 +10,8 @@ export type Task = {
     status: Status
     projectId?: string
     createdAt: string,
-    updatedAt: string
+    updatedAt: string,
+    tags?: Tag[]
 }
 
 export type Tag = {

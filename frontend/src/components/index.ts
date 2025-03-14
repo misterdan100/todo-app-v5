@@ -13,3 +13,5 @@ export * from './filters/FilterButtons'
 export * from './spinner/Spinner'
 
 export * from './tag/TagCard'
+
+export * from './errors/ErrorGetData'

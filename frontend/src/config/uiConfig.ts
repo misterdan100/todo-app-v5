@@ -10,3 +10,9 @@ export const statusColors = {
     completed: '#17C181',
     overdue: '#E04F6A',
 }
+
+export const priorityColors = {
+    low: '#0A7E4E',     // Even darker green
+    medium: '#C78600',  // Even darker amber
+    high: '#B12341',
+}

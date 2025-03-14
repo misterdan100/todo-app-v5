@@ -1,43 +1,34 @@
-'use client'
+"use client";
 
-import { AppDispatch, RootState } from "@/store/store"
-import { cleanFilter, selectFilter } from "@/store/tasks/tasksSlice"
-import { useEffect, useState } from "react"
-import { useDispatch, useSelector } from "react-redux"
+import { AppDispatch } from "@/store/store";
+import { cleanFilter, selectFilter } from "@/store/tasks/tasksSlice";
+import { useState } from "react";
+import { useDispatch } from "react-redux";
 
 const filterDictionary: Record<string, number> = {
-  'low': 1,
-  'medium': 2,
-  'high': 3,
-  'favorite': 4
-}
+  low: 1,
+  medium: 2,
+  high: 3,
+  favorite: 4,
+};
 
 export const FilterButtons = () => {
-  const [activeIndex, setActiveIndex] = useState(0)
-  const filterValue = useSelector( (state: RootState) => state.tasks.filterValue)
-  const dispatch = useDispatch<AppDispatch>()
+  const [activeIndex, setActiveIndex] = useState(0);
+  const dispatch = useDispatch<AppDispatch>();
 
-  
-  const filters = ['All', 'Low', 'Medium', 'High', 'Favorite']
-
-  useEffect(() => {
-    if(filterValue !== 'all' || filterValue) {
-      setActiveIndex(filterDictionary[filterValue])
-    }
-  }, [])
+  const filters = ["All", "Low", "Medium", "High", "Favorite"];
 
   const handleSelectFilter = (filter: string, index: number) => {
-    setActiveIndex(index)
+    setActiveIndex(index);
 
-    if(filter === 'all') {
-      dispatch(cleanFilter())
-      return
+    if (filter === "all") {
+      dispatch(cleanFilter());
+      return;
     }
 
-    dispatch(selectFilter(filter))
+    dispatch(selectFilter(filter));
+  };
 
-  }
-  
   return (
     <div className="relative py-2 px-2 grid grid-cols-5 items-center gap-3 bg-[#f9f9f9] border-2 border-white rounded-md w-fit">
       <span
@@ -53,16 +44,17 @@ export const FilterButtons = () => {
         }}
       ></span>
 
-      {filters.map( (filter, index) => (
-        <button 
+      {filters.map((filter, index) => (
+        <button
           key={index}
-          className={`relative px-1 z-10 font-medium text-sm ${activeIndex === index ? "text-violet-500" : 'text-gray-500'}`}
+          className={`relative px-1 z-10 font-medium text-sm ${
+            activeIndex === index ? "text-violet-500" : "text-gray-500"
+          }`}
           onClick={() => handleSelectFilter(filter.toLowerCase(), index)}
         >
           {filter}
         </button>
       ))}
-
     </div>
-  )
-}
+  );
+};

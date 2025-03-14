@@ -1,5 +1,5 @@
 import { HeaderPage } from "@/components";
-import TagsSecction from "./TagsSection";
+import TagsSection from "./TagsSection";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
@@ -11,7 +11,7 @@ export default function TagsPage() {
     <>
       <HeaderPage title="Tags" filters={false} />
 
-      <TagsSecction />
+      <TagsSection />
     </>
   );
 }
