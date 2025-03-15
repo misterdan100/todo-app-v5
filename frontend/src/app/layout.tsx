@@ -26,7 +26,7 @@ export default function RootLayout({
         <ClientProvider>
 
           {/* Main container */}
-          <div className="flex w-full h-full">
+          <div className="flex w-full h-screen">
             <Sidebar />
 
             <div className="flex flex-col flex-1 w-full h-screen">
@@ -45,7 +45,7 @@ export default function RootLayout({
                   </div>
                 </main>
 
-                {/* <SidebarRight /> */}
+                <SidebarRight />
               </div>
 
             </div>

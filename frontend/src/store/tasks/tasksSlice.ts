@@ -1,21 +1,24 @@
 import { Task } from "@/interface";
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { KeyedMutator } from "swr";
 
 
 // define types for state
-interface Tasks { 
+interface Props { 
     allTasks: Task[]
     tasksToShow: Task[]
     loadingTasks: boolean
+    keyCache: string
     filteredTasks: Task[]
     filterValue: string
     filtering: boolean
 }
 
-const initialState: Tasks = {
+const initialState: Props = {
     allTasks: [],
     tasksToShow: [],
     loadingTasks: true,
+    keyCache: '',
     filteredTasks: [],
     filterValue: '',
     filtering: false
@@ -50,6 +53,9 @@ const tasksSlice = createSlice({
 
             state.tasksToShow = action.payload
         },
+        addKeyCache: (state, action: PayloadAction<string>) => {
+            state.keyCache = action.payload
+        },
         cleanTasks: (state) => {
             state.allTasks = []
             state.tasksToShow = []
@@ -76,5 +82,5 @@ const tasksSlice = createSlice({
     }
 })
 
-export const { addTasks, addTasksToShow, cleanTasks, selectFilter, switchLoading,  cleanFilter } = tasksSlice.actions
+export const { addTasks, addTasksToShow, addKeyCache, cleanTasks, selectFilter, switchLoading,  cleanFilter } = tasksSlice.actions
 export default tasksSlice.reducer

@@ -17,6 +17,43 @@ export const getProjects = async (req: Request, res: Response) => {
     }
 };
 
+export const getProjectsWithTasks = async (req: Request, res: Response) => {
+    try {
+        const projects = await Project.findAll({
+            include: [Task]
+        })
+
+        if(!projects) {
+            res.status(404).json({error: 'Projects not found'})
+        }
+
+        res.status(200).json(projects)
+        
+    } catch (error) {
+        console.log('[ERROR_GETPROJECTSWITHTASKS]', error.message)
+        res.status(400).json({error: 'Error getting Projects with Tasks'})
+    }
+}
+
+export const getProjectByName = async (req: Request, res: Response) => {
+    try {
+        const { name } = req.params
+
+        const project = await Project.findOne({where: {name: name}, include: [Task]})
+
+        if(!project) {
+            res.status(404).json({error: 'Project not found'})
+            return 
+        }
+
+        res.status(200).json(project)
+        
+    } catch (error) {
+        console.log('[ERROR_GETPROJECTBYNAME]', error.message)
+        res.status(400).json({error: 'Error getting Projects with Tasks'})
+    }
+}
+
 export const getProjectById = async (req:Request, res: Response) => {
     try {
         const { id } = req.params
@@ -123,6 +160,8 @@ export const deleteProject = async (req: Request, res: Response) => {
 
 export const seedProjects = async (req: Request, res: Response) => {
     try {
+        await Project.destroy({where: {}})
+
         const projects = seedData.projects.map(item => ({name: item}))
 
         await Project.bulkCreate(projects)

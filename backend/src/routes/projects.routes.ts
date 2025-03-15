@@ -1,9 +1,11 @@
 import { Router } from "express";
-import { createProject, deleteProject, getProjectById, getProjects, getTasksByProject, seedProjects, updateProject } from "../controllers/projects.controller";
+import { createProject, deleteProject, getProjectById, getProjectByName, getProjects, getProjectsWithTasks, getTasksByProject, seedProjects, updateProject } from "../controllers/projects.controller";
 
 const router = Router()
 
 router.get('/projects', getProjects)
+router.get('/projects/tasks', getProjectsWithTasks)
+router.get('/projects/name/:name', getProjectByName)
 router.get('/projects/:id', getProjectById)
 router.get('/projects/:id/tasks', getTasksByProject)
 router.post('/projects', createProject)

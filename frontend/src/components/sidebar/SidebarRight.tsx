@@ -7,14 +7,12 @@ import { Button } from "../ui/button";
 import { uiConfig } from "@/config/uiConfig";
 import { useSelector } from "react-redux";
 import { RootState } from "@/store/store";
-import { useEffect, useMemo, useState } from "react";
-import axios from '@/config/axios'
-import useSWR from "swr";
-import { Task } from "@/interface";
+import { useMemo } from "react";
 
 export const SidebarRight = () => {
 
   const tasks = useSelector( (state: RootState) => state.tasks.allTasks)
+  const isSidebarRightOpen = useSelector( (state: RootState) => state.sidebar.isSidebarRightOpen)
 
   const metrics = useMemo(() => {
     return {
@@ -24,9 +22,9 @@ export const SidebarRight = () => {
       overdue: tasks.reduce( (total, item) => (item.status === 'overdue' ? total + 1 : total), 0)
     }
   },[tasks])
-
-  return (
-    <div className="w-0 hidden md:w-[20rem] h-full md:flex flex-col overflow-y-auto pt-6">
+  
+if( isSidebarRightOpen ) return (
+    <div className="w-[20rem] h-full md:flex flex-col overflow-y-auto pt-6">
       <div className="mx-6 ">
 
         {/* Profile card */}
@@ -105,7 +103,10 @@ export const SidebarRight = () => {
 
         {/* Chart Graphic */}
         <div className="mt-4 ">
-            <RadialChart />
+            <RadialChart 
+              completed={metrics.completed}
+              total={metrics.total}
+            />
         </div>
 
         <Button className={clsx('w-full mt-4')}

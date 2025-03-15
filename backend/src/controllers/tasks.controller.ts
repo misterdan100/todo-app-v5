@@ -149,50 +149,48 @@ export const deleteTask = async (req: Request, res: Response) => {
 
 export const seedTasks = async (req, res: Response) => {
     try {
-        // + change title by name
-        // + convert due date in a new Date type
-        // + become status to completed, pending and overdue
-        // + look for project id and relationate
-        // + look for tags id and relationate
-        // + mark as a favorite in a random way
-
         // clean tasks in db
         await Task.destroy({where: {}})
-
+        
+        // + mark as a favorite in a random way
         const randomBoolean = (): boolean => {
             return Math.random() >= 0.5
         }
-
+        
+        // + become status to completed, pending and overdue
         const chooseStatus = (current: string): string => {
             const dictionary = {
                 "inProgress": 'overdue',
                 "notStarted": 'pending',
                 "done": 'completed',
             }
-
             return dictionary[current]
         }
-
+        
+        // + convert due date in a new Date type
         const convertDate = (current: string): Date => {
             const reverseDate = current.split('/').reverse().join('-')
             return new Date(reverseDate)
         }
-
+        
         const projectsDB = await Project.findAll()
         const tagsDB = await Tag.findAll()
-
+        
+        // + look for project id and relationate
         const chooseProject = (projectName: string): string => {
             return projectsDB.find(item => item.name.toLowerCase() === projectName.toLowerCase()).id
         }
-
+        
+        // + look for tags id and relationate
         const chooseTags = (currentTags: string[]): string[] => {
             return currentTags.map(item => {
                 const tag = tagsDB.find( itemDB => itemDB.name.toLowerCase() === item.toLowerCase())
-
+                
                 return tag.id
             })
         }
-
+        
+        // + change title by name
         const tasks = seedData.todos.map( task => {
             const newTask = {
                 name: task.title,

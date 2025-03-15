@@ -1,7 +1,7 @@
 import axios from '@/config/axios'
 import { Tag, Task } from '@/interface'
 import { AppDispatch } from '@/store/store'
-import { addTasksToShow } from '@/store/tasks/tasksSlice'
+import { addKeyCache, addTasksToShow } from '@/store/tasks/tasksSlice'
 import { useDispatch } from 'react-redux'
 import useSWR from 'swr'
 
@@ -19,6 +19,7 @@ export const useTaskByTag = (nameTag: string) => {
 
     if(data) {
         dispatch(addTasksToShow(data.tasks))
+        dispatch(addKeyCache(url))
     }
 
     return { data, error, isLoading, mutate }

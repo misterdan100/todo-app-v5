@@ -1,17 +1,23 @@
 "use client";
 
 import { uiConfig } from "@/config/uiConfig";
-import { Button } from "../ui/button";
-import { IoLogoGithub, IoMoon, IoPersonSharp } from "react-icons/io5";
+import { IoList, IoLogoGithub, IoMoon, IoPersonSharp } from "react-icons/io5";
 import Link from "next/link";
 import styled from "styled-components";
 import Image from "next/image";
 import { CreateTaskModal } from "../modals/CreateTaskModal";
+import { useEffect, useState } from "react";
+import { useTasks } from "@/hooks";
+import { useDispatch, useSelector } from "react-redux";
+import { AppDispatch, RootState } from "@/store/store";
+import { switchSidebarMain, switchSidebarRight } from "@/store/ui/sidebarSlice";
+import { mutate } from "swr";
 
 const { mainColor } = uiConfig;
 
-const StyledLink = styled(Link)`
-  color: ${mainColor};
+const StyledLink = styled(Link)<{ $sidebarOpen?: boolean }>`
+  color: ${(props) => (props.$sidebarOpen ? "white" : mainColor)};
+  background-color: ${(props) => (props.$sidebarOpen ? mainColor : "white")};
 
   &:hover {
     background-color: ${mainColor};
@@ -20,8 +26,25 @@ const StyledLink = styled(Link)`
 `;
 
 export const Header = () => {
+  const allTasks = useSelector((state: RootState) => state.tasks.allTasks);
+  const isSidebarRightOpen = useSelector(
+    (state: RootState) => state.sidebar.isSidebarRightOpen
+  );
+  const isSidebarMainOpen = useSelector(
+    (state: RootState) => state.sidebar.isSidebarMainOpen
+  );
+  const dispatch = useDispatch<AppDispatch>();
+  const [totalTasks, setTotalTasks] = useState(0);
+
+  const { tasks } = useTasks({})
+
   const userId = true; // temporal meanwhile we have auth and context
   const name = "Daniel Caceres";
+
+  useEffect(() => {
+    setTotalTasks(allTasks.length);
+
+  }, [allTasks]);
 
   return (
     <header className="flex flex-col items-center justify-between w-full gap-4 px-6 my-4 md:flex-row">
@@ -48,7 +71,7 @@ export const Header = () => {
                     color: mainColor,
                   }}
                 >
-                  {99}
+                  {totalTasks}
                 </span>{" "}
                 active tasks
               </>
@@ -61,7 +84,16 @@ export const Header = () => {
 
       {/* Button add tasks */}
       <div className=" flex items-center gap-4 md:gap-[10.4rem] ">
-      <CreateTaskModal />
+        <div
+          className=" sm:hidden"
+          onClick={() => dispatch(switchSidebarMain(!isSidebarMainOpen))}
+        >
+
+            <IoList className="h-[35px] w-[35px] text-gray-400 hover:text-gray-600 cursor-pointer justify-self-start" />
+
+        </div>
+
+        <CreateTaskModal />
 
         <div className="flex items-center gap-4">
           <StyledLink
@@ -85,9 +117,11 @@ export const Header = () => {
           </StyledLink>
 
           <StyledLink
-            href="/profile"
+            href=""
             passHref
             className="h-[40px] w-[40px] rounded-full flex items-center justify-center text-lg border-2 border-[#E6E6E6] transition-colors"
+            onClick={() => dispatch(switchSidebarRight(!isSidebarRightOpen))}
+            $sidebarOpen={isSidebarRightOpen}
           >
             {" "}
             <IoPersonSharp />{" "}

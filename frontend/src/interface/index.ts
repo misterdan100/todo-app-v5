@@ -21,6 +21,12 @@ export type Tag = {
     tasks?: Task[]
 }
 
+export type Project = {
+    id: string
+    name: string
+    tasks?: Task[]
+}
+
 export type TaskFormData = Pick<Task, 'name' | 'description' | 'dueDate' | 'favorite' | 'priority' | 'status' | 'projectId'>
 
 export type Priority = 'low' | 'medium' | 'high'

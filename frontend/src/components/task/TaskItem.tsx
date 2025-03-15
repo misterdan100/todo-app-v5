@@ -1,26 +1,24 @@
 "use client";
 
 import { Task } from "@/interface";
-import axios from "@/config/axios";
 import { capitalizeText, formatDate, item } from "@/utils";
 import clsx from "clsx";
 import { motion } from "motion/react";
 import {
-  IoCheckmarkCircle,
-  IoCreate,
-  IoEllipseOutline,
+  IoCheckmarkCircle, IoEllipseOutline,
   IoStar,
-  IoTrashBin,
+  IoTrashBin
 } from "react-icons/io5";
-import { mutate } from "swr";
-import { useState } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "@/store/store";
-import { addTasksToShow } from "@/store/tasks/tasksSlice";
 import styled from "styled-components";
-import { priorityColors, uiConfig } from "@/config/uiConfig";
-import { deleteTask, switchFavorite } from "@/api";
+import { priorityColors } from "@/config/uiConfig";
+import { changeStatus, deleteTask, switchFavorite } from "@/api";
 import { useRouter } from "next/navigation";
+import { addTasksToShow } from "@/store/tasks/tasksSlice";
+import { useTasks } from "@/hooks";
+import { mutate } from "swr";
 
 type Props = {
   task: Task;
@@ -38,14 +36,10 @@ export const TaskItem = ({ task }: Props) => {
 
   const { id, name, description, dueDate, priority, favorite: taskFav, status } = task;
   const [favorite, setFavorite] = useState(task.favorite);
-  const [ isCompleted, setIsCompleted ] = useState( status === 'completed' ? true : false)
+  const [isCompleted, setIsCompleted] = useState(status === 'completed' ? true : false);
 
-  // redux context
-  const tasksToShow = useSelector(
-    (state: RootState) => state.tasks.tasksToShow
-  );
-  const dispatch = useDispatch<AppDispatch>();
-
+  // Redux states
+  const keyCache = useSelector( (state: RootState) => state.tasks.keyCache)
 
   // get priority color or default
   const priorityColor = priorityColors[priority] || "#000000";
@@ -68,16 +62,40 @@ export const TaskItem = ({ task }: Props) => {
 
   const handleDeleteTask = async () => {
     try {
-      const res = await deleteTask({taskId: id})
-      if( res ) {
-        router.refresh()
+      const res = await deleteTask({taskId: id});
+      if(res) {
+
+        mutate(keyCache)
+        console.log(keyCache)
+        if(keyCache !== '/tasks') {
+          mutate('/tasks')
+        }
       }
     } catch (error) {
       console.error("Error deleting task:", error);
     }
   };
 
-  const handleCheck = async () => {};
+  // If this task has been marked as deleted, don't render it
+
+  const handleCheck = async () => {
+    try {
+      const newStatus = status === 'completed' ? 'pending' : 'completed'
+      const res = await changeStatus(id, newStatus)
+
+      setIsCompleted(newStatus === 'completed' ? true : false)
+      
+      if(!res) {
+        setIsCompleted(newStatus === 'completed' ? false : true)
+        return
+      }
+
+      mutate('/tasks')
+
+    } catch (error) {
+      console.error("Error changing task status:", error);
+    }
+  };
 
   return (
     <motion.div
@@ -114,7 +132,7 @@ export const TaskItem = ({ task }: Props) => {
           </button>
           <button
             className="text-blue-400 hover:scale-125 transition-transform "
-            onClick={() => console.log("edit button")}
+            onClick={handleCheck}
           >
             {isCompleted ? (
               <IoCheckmarkCircle />

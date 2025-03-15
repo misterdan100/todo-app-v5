@@ -1,4 +1,4 @@
-import { HeaderPage } from "@/components"
+import { ErrorGetData, HeaderPage } from "@/components"
 import { capitalizeText } from "@/utils"
 import { Metadata, ResolvingMetadata } from "next"
 import { TagSection } from "./TagSection"
@@ -36,8 +36,7 @@ export default async function TagPage({params}: {params: Promise<{ slug: string 
 
   const tag = await getTag(slug)
   if(!tag) {
-    console.log('entrandooooooooooooo')
-    return <div className="text-red-500 font-bold mt-6 text-center w-full">Error loading data, plese refresh the page.</div>;
+    return <ErrorGetData message="Error loading data, plese refresh the page."/>
   }
 
   return (

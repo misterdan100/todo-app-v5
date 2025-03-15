@@ -4,7 +4,7 @@
 import axios from "@/config/axios";
 import { Task } from "@/interface";
 import { AppDispatch } from "@/store/store";
-import { addTasks, addTasksToShow } from "@/store/tasks/tasksSlice";
+import { addKeyCache, addTasks, addTasksToShow } from "@/store/tasks/tasksSlice";
 import { useDispatch } from "react-redux";
 import useSWR from "swr";
 
@@ -12,6 +12,7 @@ export function useTasks({showTasks = false}: {showTasks?: boolean}) {
   const dispatch = useDispatch<AppDispatch>();
   
   const url = `/tasks`;
+  const key = url
   
   const fetcher = (url: string) => axios(url).then((res) => res.data as Task[]);
   
@@ -28,6 +29,7 @@ export function useTasks({showTasks = false}: {showTasks?: boolean}) {
 
     if(showTasks){
       dispatch(addTasksToShow(data))
+      dispatch(addKeyCache(key))
     }
   }
 

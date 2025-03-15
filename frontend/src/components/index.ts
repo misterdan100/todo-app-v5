@@ -15,3 +15,5 @@ export * from './spinner/Spinner'
 export * from './tag/TagCard'
 
 export * from './errors/ErrorGetData'
+
+export * from './projects/ProjectCard'
