@@ -2,6 +2,7 @@ import { BelongsTo, BelongsToMany, Column, DataType, Default, ForeignKey, IsUUID
 import Project from './Project.model'
 import Tag from './Tag.model'
 import TaskTag from './TaskTag.model'
+import User from './User.model'
 
 @Table({
     tableName: 'tasks'
@@ -59,6 +60,17 @@ class Task extends Model {
     // Relation with Project (one to many)
     @BelongsTo(() => Project)
     project?: Project
+
+    // Define relation with user
+    @ForeignKey(() => User)
+    @Column({
+        type: DataType.UUID
+    })
+    declare userId: string
+
+    @BelongsTo(() => User)
+    user: User
+
 
     // Relation with Tags (many to many)
     @BelongsToMany(() => Tag, () => TaskTag)

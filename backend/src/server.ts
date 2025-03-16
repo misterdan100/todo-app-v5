@@ -3,6 +3,7 @@ import dotenv from 'dotenv'
 import db from './config/db';
 import router from './router';
 import cors, {CorsOptions} from 'cors'
+import cookieParser from 'cookie-parser'
 
 dotenv.config()
 
@@ -39,6 +40,9 @@ app.use(cors(corsOptions))
 
 // middleware que transforma la req.body a un json
 app.use(express.json())
+
+// middleware to read cookies
+app.use(cookieParser())
 
 // connect with router file
 app.use('/api', router)

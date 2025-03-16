@@ -3,6 +3,7 @@ import db from "./config/db";
 import projectsRoutes from './routes/projects.routes'
 import tasksRoutes from './routes/tasks.routes'
 import tagsRoutes from './routes/tags.routes'
+import usersRoutes from './routes/users.routes'
 import { clearAndSeed } from "./controllers/seed.controller";
 
 const router = Router()
@@ -25,5 +26,6 @@ router.get('/seedData', clearAndSeed)
 router.use(projectsRoutes)
 router.use(tasksRoutes)
 router.use(tagsRoutes)
+router.use(usersRoutes)
 
 export default router
