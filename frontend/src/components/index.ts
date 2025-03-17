@@ -15,5 +15,9 @@ export * from './spinner/Spinner'
 export * from './tag/TagCard'
 
 export * from './errors/ErrorGetData'
+export * from './errors/InputErrorMessage'
 
 export * from './projects/ProjectCard'
+
+export * from './auth/LoginForm'
+export * from './auth/RegisterForm'

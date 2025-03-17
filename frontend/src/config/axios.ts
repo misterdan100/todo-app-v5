@@ -1,7 +1,8 @@
 import axios from 'axios'
 
 const api = axios.create({
-    baseURL: process.env.NEXT_PUBLIC_API_URL + '/api'
+    baseURL: process.env.NEXT_PUBLIC_API_URL + '/api',
+    withCredentials: true // to allows get and send cookies
 })
 
 // api.interceptors.request.use((config) => {

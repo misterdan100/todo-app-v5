@@ -4,6 +4,7 @@ import { Inter } from "next/font/google";
 import "./globals.css";
 import { Header, Sidebar, SidebarRight } from "@/components";
 import ClientProvider from "@/store/ClientProvider";
+import { Toaster } from "@/components/ui/sonner"
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -53,6 +54,12 @@ export default function RootLayout({
           </div>
 
         </ClientProvider>
+        <Toaster 
+          position="top-right"
+          expand={true}
+          closeButton
+          // invert={true} // invert between dark and light mode
+        />
       </body>
     </html>
   );
