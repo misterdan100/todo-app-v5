@@ -12,6 +12,7 @@ router.get('/users', getUserById)
 router.delete('/users', deleteUser)
 
 router.post('/auth/login', logingUser)
+router.post('/auth/register', createUser)
 
 router.post('/users/seed')
 

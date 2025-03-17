@@ -2,14 +2,14 @@ import { Request, Response } from 'express'
 import User from '../models/User.model'
 import bcrypt from 'bcrypt'
 import jwt from 'jsonwebtoken'
-import { CreatedAt } from 'sequelize-typescript'
+
 
 export const createUser = async (req: Request, res: Response) => {
     try {
         const { name, email, password } = req.body as {name: string, email: string, password: string}
 
         if( !name || !email || !password) {
-            res.status(500).json({error: 'Data for new user is missing'})
+            res.status(500).json({success: false, message: 'Data for new user is missing'})
             return
         }
 
@@ -17,7 +17,7 @@ export const createUser = async (req: Request, res: Response) => {
         const userExist = await User.findOne({where: {email: email}})
 
         if( userExist ) {
-            res.status(500).json({error: 'User already exist in platform'})
+            res.status(500).json({success: false, message: 'User already exist in platform'})
             return
         }
 
@@ -50,7 +50,7 @@ export const createUser = async (req: Request, res: Response) => {
         
     } catch (error) {
         console.log('[ERROR_CREATEUSER]', error.message)
-        res.status(500).json({error: 'Error creating user'})
+        res.status(500).json({success: false, error: true, message: 'Error creating user'})
     }
 
 }
@@ -120,7 +120,7 @@ export const logingUser = async (req: Request, res: Response) => {
         res.cookie('token', newToken, {
             httpOnly: true, // No accesible desde JavaScript en el navegador
             secure: false,   // Solo se envia en HTTPS
-            sameSite: 'strict', // previene ataques CSRF
+            sameSite: 'none', // previene ataques CSRF
             maxAge: 100 * 60 * 60 * 24, // expira en 1 dia
         })
 
@@ -128,7 +128,7 @@ export const logingUser = async (req: Request, res: Response) => {
         
     } catch (error) {
         console.log('[ERROR_LOGINUSER]', error.message)
-        res.status(500).json({error: 'Error loging user'})
+        res.status(500).json({success: false, message: 'Error loging user'})
     }
 }
 

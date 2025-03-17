@@ -33,7 +33,9 @@ const corsOptions: CorsOptions = {
             return callback(null, true)
             return callback(new Error('CORS policy violation'), false)
         }
-    }
+    },
+    credentials: true,
+
 }
 
 app.use(cors(corsOptions))
