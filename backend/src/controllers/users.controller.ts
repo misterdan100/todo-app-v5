@@ -2,6 +2,7 @@ import { Request, Response } from 'express'
 import User from '../models/User.model'
 import bcrypt from 'bcrypt'
 import jwt from 'jsonwebtoken'
+import { cookiesConfig } from '../config/cookiesConfig'
 
 
 export const createUser = async (req: Request, res: Response) => {
@@ -17,7 +18,7 @@ export const createUser = async (req: Request, res: Response) => {
         const userExist = await User.findOne({where: {email: email}})
 
         if( userExist ) {
-            res.status(500).json({success: false, message: 'User already exist in platform'})
+            res.status(500).json({success: false, message: 'This e-mail is already registered'})
             return
         }
 
@@ -39,12 +40,7 @@ export const createUser = async (req: Request, res: Response) => {
         user.token = token
         const savedUser = await user.save()
 
-        res.cookie('token', token, {
-            httpOnly: true, // No accesible desde Javascript en el navegador
-            secure: true,   // Solo se envia en HTTPS
-            sameSite: 'strict', // previene ataques CSRF
-            maxAge: 1000 * 60 * 60 * 24, // la cookie expira en 1 dia
-        })
+        res.cookie('token', token, cookiesConfig)
 
         res.status(200).json({ success: true, data: savedUser})
         
@@ -78,6 +74,43 @@ export const getUserById = async (req: Request, res: Response) => {
     } catch (error) {
         console.log('[ERROR_GETUSERBYID]', error.message)
         res.status(500).json({success: false, error: 'Error getting user by id'})
+    }
+}
+
+export const verifySession = async (req: Request, res: Response) => {
+    try {
+        // read and verify cookies
+        if(!req.cookies.token) {
+            res.status(401).json({success: false, message: 'Unauthorized user'})
+            return
+        }
+
+        // verify jwt
+        const token = jwt.verify(req.cookies.token, process.env.JWT_SECRET) as jwt.JwtPayload
+        if(!token) {
+            res.status(401).json({success: false, message: 'Unauthorized request, invalid token.'})
+            return 
+        }
+
+        // look for user
+        const user = await User.findByPk(token.id)
+        if(!user) {
+            res.status(404).json({success: false, message: 'User not found'})
+            return
+        }
+
+        //compare user token with cookies token
+        if(user.token !== req.cookies.token) {
+            res.status(401).json({success: false, message: 'Unauthorized request, not access'})
+            return
+        }
+
+        res.status(200).json({success: true, data: {id: user.id ,email: user.email, name: user.name}, message: 'User authenticated'})
+
+    } catch (error) {
+        console.log('[ERROR_VERIFYSESSION]', error.message)
+        res.status(500).json({success: false, message: 'Error verifying user session'})
+        return
     }
 }
 
@@ -117,18 +150,55 @@ export const logingUser = async (req: Request, res: Response) => {
         await user.save()
 
         // set token in cookies
-        res.cookie('token', newToken, {
-            httpOnly: true, // No accesible desde JavaScript en el navegador
-            secure: false,   // Solo se envia en HTTPS
-            sameSite: 'none', // previene ataques CSRF
-            maxAge: 100 * 60 * 60 * 24, // expira en 1 dia
-        })
+        res.cookie('token', newToken, cookiesConfig)
 
         res.status(200).json({success: true})
         
     } catch (error) {
         console.log('[ERROR_LOGINUSER]', error.message)
         res.status(500).json({success: false, message: 'Error loging user'})
+    }
+}
+
+export const logoutUser = async (req: Request, res: Response) => {
+    try {
+        // read and verify cookies
+        if(!req.cookies.token) {
+            res.status(401).json({success: false, message: 'Unauthorized user'})
+            return
+        }
+
+        // verify jwt
+        const token = jwt.verify(req.cookies.token, process.env.JWT_SECRET) as jwt.JwtPayload
+        if(!token) {
+            res.status(401).json({success: false, message: 'Unauthorized request, invalid token.'})
+            return 
+        }
+
+        // look for user
+        const user = await User.findByPk(token.id)
+        if(!user) {
+            res.status(404).json({success: false, message: 'User not found'})
+            return
+        }
+
+        //compare user token with cookies token
+        if(user.token !== req.cookies.token) {
+            res.status(401).json({success: false, message: 'Unauthorized request, not access'})
+            return
+        }
+
+        user.token = null
+        await user.save()
+
+        res.clearCookie('token')
+        res.clearCookie('session')
+
+        res.status(200).json({success: true})
+
+    } catch (error) {
+        console.log('[ERROR_LOGINUSER]', error.message)
+        res.status(500).json({success: false, message: 'Error loging user'})  
     }
 }
 

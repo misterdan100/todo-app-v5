@@ -1,34 +1,28 @@
 "use client";
 
-import { useForm, SubmitHandler } from 'react-hook-form'
+import { useState } from 'react';
+import Link from "next/link";
+import { useRouter } from 'next/navigation';
+import { useForm } from 'react-hook-form';
+import { toast } from 'sonner';
+import { uiConfig } from "@/config/uiConfig";
+import { InputErrorMessage } from '../errors/InputErrorMessage';
+import { registerUser } from '@/api';
 
 // ShadCN imports
 import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
+  CardDescription, CardHeader,
+  CardTitle
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { uiConfig } from "@/config/uiConfig";
-import Link from "next/link";
-import { InputErrorMessage } from '../errors/InputErrorMessage';
-import { loginUser, registerUser } from '@/api';
-import { useState } from 'react';
-import { toast } from 'sonner';
-import { useRouter } from 'next/navigation';
-// ShadCN imports
+import { useDispatch } from 'react-redux';
+import { AppDispatch } from '@/store/store';
+import { verifySession } from '@/store/auth/sessionSlice';
+
 
 type InputsForm = {
     email: string
@@ -38,6 +32,7 @@ type InputsForm = {
 }
 
 export const RegisterForm = () => {
+  const dispatch = useDispatch<AppDispatch>();
   const router = useRouter()
   const [errorLogin, setErrorLogin] = useState('')
     const { register, handleSubmit, formState: { errors}, watch } = useForm<InputsForm>({
@@ -65,8 +60,8 @@ export const RegisterForm = () => {
         toast.error(res.message)
         return
       }
-
-      toast.success('User registered successfully')
+      dispatch(verifySession())
+      toast.success('User successfully registered')
       router.push('/')
     }
 

@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { createUser, deleteUser, getUserById, logingUser, updateProfile } from "../controllers/users.controller";
+import { createUser, deleteUser, getUserById, logingUser, logoutUser, updateProfile, verifySession } from "../controllers/users.controller";
 
 const router = Router()
 
@@ -13,6 +13,8 @@ router.delete('/users', deleteUser)
 
 router.post('/auth/login', logingUser)
 router.post('/auth/register', createUser)
+router.get('/auth/session', verifySession)
+router.get('/auth/logout', logoutUser)
 
 router.post('/users/seed')
 

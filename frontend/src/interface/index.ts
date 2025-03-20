@@ -1,4 +1,8 @@
-
+export type UserSession = {
+    id: string,
+    email: string,
+    name: string
+}
 
 export type Task = {
     id: string,

@@ -6,6 +6,7 @@ import Tag from '../models/Tag.model'
 import TaskTag from '../models/TaskTag.model'
 
 export const getTasks = async (req: Request, res: Response) => {
+
     try {
 
         if(req.query.filter) {

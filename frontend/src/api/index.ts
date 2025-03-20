@@ -5,3 +5,4 @@ export * from './createTask'
 
 export * from './auth/loginUser'
 export * from './auth/registerUser'
+export * from './auth/validateSession'

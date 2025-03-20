@@ -24,10 +24,15 @@ import {
 import { uiConfig } from "@/config/uiConfig";
 import Link from "next/link";
 import { InputErrorMessage } from '../errors/InputErrorMessage';
-import { loginUser } from '@/api';
+import { loginUser, validateSession } from '@/api';
 import { useState } from 'react';
 import { toast } from 'sonner';
 import { useRouter } from 'next/navigation';
+import { useSession } from '@/hooks';
+import { revalidatePath } from 'next/cache';
+import { useDispatch } from 'react-redux';
+import { AppDispatch } from '@/store/store';
+import { verifySession } from '@/store/auth/sessionSlice';
 // ShadCN imports
 
 type InputsForm = {
@@ -37,6 +42,7 @@ type InputsForm = {
 
 export const LoginForm = () => {
   const router = useRouter()
+  const dispatch = useDispatch<AppDispatch>()
   const [errorLogin, setErrorLogin] = useState('')
     const { register, handleSubmit, formState: { errors} } = useForm<InputsForm>({
         defaultValues: {
@@ -52,7 +58,8 @@ export const LoginForm = () => {
         toast.error(res.message)
         return
       }
-
+      dispatch(verifySession())
+      router.refresh()
       router.push('/')
     }
 

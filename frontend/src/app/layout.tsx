@@ -58,7 +58,7 @@ export default function RootLayout({
           position="top-right"
           expand={true}
           closeButton
-          // invert={true} // invert between dark and light mode
+          richColors
         />
       </body>
     </html>

@@ -5,13 +5,22 @@ import Image from "next/image";
 import { RadialChart } from "./RadialChart";
 import { Button } from "../ui/button";
 import { uiConfig } from "@/config/uiConfig";
-import { useSelector } from "react-redux";
-import { RootState } from "@/store/store";
+import { useDispatch, useSelector } from "react-redux";
+import { AppDispatch, RootState } from "@/store/store";
 import { useMemo } from "react";
+import { capitalizeText } from "@/utils";
+import { logoutUser } from "@/api/auth/logoutUser";
+import { useRouter } from "next/navigation";
+import { toast } from "sonner";
+import { verifySession } from "@/store/auth/sessionSlice";
 
 export const SidebarRight = () => {
+  const router = useRouter()
 
+  const dispatch = useDispatch<AppDispatch>();
   const tasks = useSelector( (state: RootState) => state.tasks.allTasks)
+  const session = useSelector( (state: RootState) => state.session.activeSession)
+  const user = useSelector( (state: RootState) => state.session.user)
   const isSidebarRightOpen = useSelector( (state: RootState) => state.sidebar.isSidebarRightOpen)
 
   const metrics = useMemo(() => {
@@ -22,8 +31,21 @@ export const SidebarRight = () => {
       overdue: tasks.reduce( (total, item) => (item.status === 'overdue' ? total + 1 : total), 0)
     }
   },[tasks])
+
+  const handleLogout = async () => {
+
+    const res = await logoutUser()
+
+    if(res.success === true) {
+      dispatch(verifySession())
+      router.push('/login')
+      return
+    }
+    toast.error('Error logging out')
+
+  }
   
-if( isSidebarRightOpen ) return (
+if( isSidebarRightOpen && session ) return (
     <div className="w-[20rem] h-full md:flex flex-col overflow-y-auto pt-6">
       <div className="mx-6 ">
 
@@ -43,7 +65,7 @@ if( isSidebarRightOpen ) return (
           <div>
             <h1 className="flex flex-col text-xl">
               <span className="font-medium">Hello, </span>
-              <span className="font-bold">Daniel Merchan</span>
+              <span className="font-bold">{user && capitalizeText(user?.name)}</span>
             </h1>
           </div>
           
@@ -113,9 +135,9 @@ if( isSidebarRightOpen ) return (
             style={{
                 backgroundColor: uiConfig.contrastColor,
             }}
-            onClick={() => console.log('Log out button')}
+            onClick={handleLogout}
         >
-            Sign out
+            Logout
         </Button>
 
       </div>

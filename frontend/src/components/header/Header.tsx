@@ -7,11 +7,12 @@ import styled from "styled-components";
 import Image from "next/image";
 import { CreateTaskModal } from "../modals/CreateTaskModal";
 import { useEffect, useState } from "react";
-import { useTasks } from "@/hooks";
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "@/store/store";
 import { switchSidebarMain, switchSidebarRight } from "@/store/ui/sidebarSlice";
-import { mutate } from "swr";
+import { useRouter } from "next/navigation";
+import { verifySession } from "@/store/auth/sessionSlice";
+
 
 const { mainColor } = uiConfig;
 
@@ -26,6 +27,9 @@ const StyledLink = styled(Link)<{ $sidebarOpen?: boolean }>`
 `;
 
 export const Header = () => {
+  const router = useRouter()
+  const user = useSelector( (state: RootState) => state.session.user)
+
   const allTasks = useSelector((state: RootState) => state.tasks.allTasks);
   const isSidebarRightOpen = useSelector(
     (state: RootState) => state.sidebar.isSidebarRightOpen
@@ -36,15 +40,13 @@ export const Header = () => {
   const dispatch = useDispatch<AppDispatch>();
   const [totalTasks, setTotalTasks] = useState(0);
 
-  const { tasks } = useTasks({})
-
-  const userId = true; // temporal meanwhile we have auth and context
-  const name = "Daniel Caceres";
+  // const { tasks } = useTasks({})
 
   useEffect(() => {
+    dispatch(verifySession())
     setTotalTasks(allTasks.length);
 
-  }, [allTasks]);
+  }, [allTasks, user]);
 
   return (
     <header className="flex flex-col items-center justify-between w-full gap-4 px-6 my-4 md:flex-row">
@@ -58,11 +60,11 @@ export const Header = () => {
             <span role="img" aria-label="wave">
               👋
             </span>
-            {userId ? `Welcome, ${name}!` : "Welcome to Mister Todos"}
+            {user ? `Welcome, ${user.name}!` : "Welcome to Mister Todos"}
           </h1>
 
           <p>
-            {userId ? (
+            {user ? (
               <>
                 You have{" "}
                 <span
@@ -92,8 +94,8 @@ export const Header = () => {
             <IoList className="h-[35px] w-[35px] text-gray-400 hover:text-gray-600 cursor-pointer justify-self-start" />
 
         </div>
-
-        <CreateTaskModal />
+            {user && <CreateTaskModal /> }
+        
 
         <div className="flex items-center gap-4">
           <StyledLink
@@ -120,7 +122,7 @@ export const Header = () => {
             href=""
             passHref
             className="h-[40px] w-[40px] rounded-full flex items-center justify-center text-lg border-2 border-[#E6E6E6] transition-colors"
-            onClick={() => dispatch(switchSidebarRight(!isSidebarRightOpen))}
+            onClick={() => !user ? router.push('/login') : dispatch(switchSidebarRight(!isSidebarRightOpen))}
             $sidebarOpen={isSidebarRightOpen}
           >
             {" "}

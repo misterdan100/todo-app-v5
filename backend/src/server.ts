@@ -24,18 +24,28 @@ connectDB()
 const app = express();
 
 // CORS polityes
-const allowedOrigins = [process.env.FRONTEND_URL]
+const allowedOrigins = [
+    'http://localhost:3000',  // Tu frontend en desarrollo
+    process.env.FRONTEND_URL  // Para producción (desde .env)
+]
 const corsOptions: CorsOptions = {
     origin: function(origin, callback) {
-        if(allowedOrigins.includes(origin)) {
-            return callback(null, true)
-        } else {
-            return callback(null, true)
-            return callback(new Error('CORS policy violation'), false)
+        // Allow requests with no origin (like mobile apps, curl, Postman)
+        if (!origin) {
+          return callback(null, true);
         }
-    },
-    credentials: true,
-
+        
+        if (allowedOrigins.includes(origin)) {
+          return callback(null, true);
+        } else {
+          console.log(`Origin ${origin} not allowed by CORS`);
+          return callback(new Error('CORS policy violation'), false);
+        }
+      },
+      credentials: true,  // Importante para permitir cookies
+      methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+      allowedHeaders: ['Content-Type', 'Authorization'],
+      exposedHeaders: ['set-cookie']
 }
 
 app.use(cors(corsOptions))
