@@ -7,6 +7,8 @@ export * from './sidebar/RadialChart'
 export * from './task/TaskItem'
 
 export * from './modals/CreateTaskModal'
+export * from './modals/EditProfileModal'
+export * from './modals/DeleteProfileModal'
 
 export * from './filters/FilterButtons'
 

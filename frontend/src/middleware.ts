@@ -10,9 +10,9 @@ export async function middleware(request: NextRequest) {
         const currentURL = request.nextUrl.pathname
         console.log(currentURL)
         const tokenCookie = request.cookies.get('token')?.value
-        
-        if(!tokenCookie) {
-            return NextResponse.redirect(new URL('/login', request.url))
+
+        if((currentURL.startsWith('/login') || currentURL.startsWith('/register') ) && !tokenCookie) {
+            return NextResponse.next()
         }
 
         const urlReqSession = '/auth/session'

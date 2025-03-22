@@ -29,6 +29,7 @@ const StyledLink = styled(Link)<{ $sidebarOpen?: boolean }>`
 export const Header = () => {
   const router = useRouter()
   const user = useSelector( (state: RootState) => state.session.user)
+  const dispatch = useDispatch<AppDispatch>();
 
   const allTasks = useSelector((state: RootState) => state.tasks.allTasks);
   const isSidebarRightOpen = useSelector(
@@ -37,7 +38,6 @@ export const Header = () => {
   const isSidebarMainOpen = useSelector(
     (state: RootState) => state.sidebar.isSidebarMainOpen
   );
-  const dispatch = useDispatch<AppDispatch>();
   const [totalTasks, setTotalTasks] = useState(0);
 
   // const { tasks } = useTasks({})
@@ -46,7 +46,7 @@ export const Header = () => {
     dispatch(verifySession())
     setTotalTasks(allTasks.length);
 
-  }, [allTasks, user]);
+  }, [allTasks]);
 
   return (
     <header className="flex flex-col items-center justify-between w-full gap-4 px-6 my-4 md:flex-row">

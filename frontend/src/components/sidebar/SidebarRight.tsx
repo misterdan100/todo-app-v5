@@ -13,6 +13,7 @@ import { logoutUser } from "@/api/auth/logoutUser";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { verifySession } from "@/store/auth/sessionSlice";
+import Link from "next/link";
 
 export const SidebarRight = () => {
   const router = useRouter()
@@ -50,7 +51,8 @@ if( isSidebarRightOpen && session ) return (
       <div className="mx-6 ">
 
         {/* Profile card */}
-        <div
+        <Link
+        href='/profile'
           className="px-2 py-4 flex items-center gap-3 hover:bg-[#ededed] transition duration-300 ease-in-out cursor-pointer border-2 border-transparent hover:border-2 hover:border-white rounded-lg"
           onClick={() => console.log("click profile")}
         >
@@ -69,7 +71,7 @@ if( isSidebarRightOpen && session ) return (
             </h1>
           </div>
           
-        </div>
+        </Link>
 
 
         {/* Metrics tasks */}
