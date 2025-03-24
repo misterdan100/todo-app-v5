@@ -1,7 +1,11 @@
 import { Router } from "express";
 import { changeFavoriteTask, createTask, deleteTask, getTaskById, getTasks, seedTasks, updateTask } from "../controllers/tasks.controller";
+import authenticate from "../middleware/auth";
 
 const router = Router()
+
+router.use('/tasks', authenticate)
+router.use('/tasks/*', authenticate)
 
 router.get('/tasks', getTasks)
 router.get('/tasks/:id', getTaskById)

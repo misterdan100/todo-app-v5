@@ -34,18 +34,13 @@ export async function generateMetadata({params}: Props, parent: ResolvingMetadat
 export default async function TagPage({params}: {params: Promise<{ slug: string }>}) {
   const { slug } = await params
 
-  const tag = await getTag(slug)
-  if(!tag) {
-    return <ErrorGetData message="Error loading data, plese refresh the page."/>
-  }
-
   return (
     <>
     {/* Title */}
       <HeaderPage title={`${capitalizeText(slug)} Tag`} />
 
       {/* <ShowTasksSection page='pending'/> */}
-      <TagSection tag={tag}/>
+      <TagSection tagName={slug}/>
     </>
   )
 }

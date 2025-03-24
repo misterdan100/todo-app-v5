@@ -1,7 +1,11 @@
 import { Router } from "express";
 import { createTag, deleteTag, getTagById, getTagByName, getTags, getTagsWithTasks, getTasksByTag, seedTags } from "../controllers/tags.controller";
+import authenticate from "../middleware/auth";
 
 const router = Router()
+
+router.use('/tags', authenticate)
+router.use('/tags/*', authenticate)
 
 router.get('/tags', getTags)
 router.get('/tags/tasks', getTagsWithTasks)

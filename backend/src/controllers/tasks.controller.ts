@@ -6,12 +6,12 @@ import Tag from '../models/Tag.model'
 import TaskTag from '../models/TaskTag.model'
 
 export const getTasks = async (req: Request, res: Response) => {
-
     try {
+        const userId = req.user.id
 
         if(req.query.filter) {
             const tasks = await Task.findAll({
-                where: {status: req.query.filter},
+                where: {status: req.query.filter, userId},
                 order: [['createdAt', 'DESC']]
             })
 
@@ -20,6 +20,7 @@ export const getTasks = async (req: Request, res: Response) => {
         }
 
         const tasks = await Task.findAll({
+            where: {userId},
             order: [['createdAt', 'DESC']]
         })
 
@@ -51,11 +52,12 @@ export const getTaskById = async ( req: Request, res: Response) => {
 
 export const createTask = async (req: Request, res: Response) => {
     try {
+        const userId = req.user.id
         const newTaskData = req.body
 
         // Validate if task has a name
         if(!newTaskData.name) {
-            res.status(400).json({error: 'Task name is required'})
+            res.status(400).json({ success: false ,message: 'Task name is required'})
             return
         }
         const { projectId, ...rest } = newTaskData 
@@ -64,22 +66,22 @@ export const createTask = async (req: Request, res: Response) => {
         if(projectId && projectId !== '') {
             const project = await Project.findByPk(newTaskData.projectId)
             if(!project) {
-                res.status(400).json({error: 'Project id not found'})
+                res.status(400).json({ success: false ,message: 'Project id not found'})
                 return
             }
 
-            const newTask = await Task.create(rest)
+            const newTask = await Task.create({...rest, userId})
             
             // await project.$add( 'tasks' , newTask)
             newTask.projectId = projectId
             await newTask.save()
-            res.status(200).json(newTask)
+            res.status(200).json({success: true, message: 'Task created', data: {name: newTask.name}})
             return
         }
 
-        const newTask = await Task.create(rest)
+        await Task.create({...rest, userId})
 
-        res.status(200).json(newTask)
+        res.status(200).json({success: true, message: 'Task created'})
         
     } catch (error) {
         console.log('[ERROR_CREATETASK]', error.message)
@@ -96,17 +98,17 @@ export const updateTask = async (req: Request, res: Response) => {
         const task = await Task.findByPk(id)
 
         if(!task) {
-            res.status(404).json({error: 'Task not found'})
+            res.status(404).json({success: false, message: 'Task not found'})
             return
         }
 
         await task.update(newData)
         const response = await task.save()
-        res.status(200).json(response)
+        res.status(200).json({success: true, message: 'Task updated'})
 
     } catch (error) {
         console.log('[ERROR_UPDATETASK]', error.message)
-        res.status(400).json({error: 'Error updating task'})
+        res.status(400).json({success: false, message: 'Error updating task'})
     }
 }
 
@@ -136,22 +138,26 @@ export const deleteTask = async (req: Request, res: Response) => {
 
         const task = await Task.findByPk(id)
         if(!task) {
-            res.status(404).json({error: 'Task not found by id'})
+            res.status(404).json({success: false, message: 'Task not found by id'})
             return
         }
 
         await task.destroy()
-        res.status(200).json({message: 'Task deleted'})
+        res.status(200).json({success: true, message: 'Task deleted'})
     } catch (error) {
         console.log('[ERROR_DELETETASK]', error.message)
-        res.status(400).json({error: 'Error deleting task'})
+        res.status(400).json({success: false, message: 'Error deleting task'})
     }
 }
 
-export const seedTasks = async (req, res: Response) => {
+export const seedTasks = async (req: Request, res: Response) => {
     try {
+
+        const userId = req.user.id
+
         // clean tasks in db
-        await Task.destroy({where: {}})
+        await TaskTag.destroy({where: {userId}})
+        await Task.destroy({where: {userId}})
         
         // + mark as a favorite in a random way
         const randomBoolean = (): boolean => {
@@ -174,8 +180,8 @@ export const seedTasks = async (req, res: Response) => {
             return new Date(reverseDate)
         }
         
-        const projectsDB = await Project.findAll()
-        const tagsDB = await Tag.findAll()
+        const projectsDB = await Project.findAll({where: {userId}})
+        const tagsDB = await Tag.findAll({where: {userId}})
         
         // + look for project id and relationate
         const chooseProject = (projectName: string): string => {
@@ -191,7 +197,7 @@ export const seedTasks = async (req, res: Response) => {
             })
         }
         
-        // + change title by name
+        // + Create task object
         const tasks = seedData.todos.map( task => {
             const newTask = {
                 name: task.title,
@@ -201,23 +207,28 @@ export const seedTasks = async (req, res: Response) => {
                 priority: task.priority,
                 dueDate: convertDate(task.dueDate),
                 projectId: chooseProject(task.project),
-                tags: chooseTags(task.tags)
+                tags: chooseTags(task.tags),
+                userId
             }
             return newTask
         })
 
         await Task.bulkCreate(tasks)
-        const tasksDB = await Task.findAll()
+        const tasksDB = await Task.findAll({where: {userId}})
 
         // relation tags / tasks
-        const bulkTagsTasks: {taskId: string, tagId: string}[] = []
+        const bulkTagsTasks: {taskId: string, tagId: string, userId: string}[] = []
 
         tasksDB.forEach( taskDB => {
             const todo = seedData.todos.find( t => t.title.toLowerCase() === taskDB.name.toLowerCase())
 
             todo.tags.forEach( tagToDo => {
                 const tagId = tagsDB.find( i => i.name.toLowerCase() === tagToDo.toLowerCase())
-                bulkTagsTasks.push({taskId: taskDB.id, tagId: tagId.id})
+                bulkTagsTasks.push({
+                    taskId: taskDB.id, 
+                    tagId: tagId.id,
+                    userId
+                })
             })
         })
 

@@ -1,13 +1,12 @@
 import axios from '@/config/axios'
 
 
-export const createTask = async (data: {}) => {
+export const createTask = async (dataTask: {}) => {
     try {
         const url = '/tasks'
 
-        const res = await axios.post(url, data)
-
-        return true
+        const { data } = await axios.post(url, dataTask)
+        return data
         
     } catch (error) {
         return false

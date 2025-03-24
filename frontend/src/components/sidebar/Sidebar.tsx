@@ -152,7 +152,7 @@ export const Sidebar = () => {
                   className="relative group py-2 px-4 hover:bg-gray-200 transition-colors rounded-md "
                 >
                   <Link
-                    href={`/projects/${item1.name}`}
+                    href={`/projects/${item1.name.replaceAll(' ', '-')}`}
                     replace
                     className="text-[22px] flex items-center gap-2 "
                   >

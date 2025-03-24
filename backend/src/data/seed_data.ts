@@ -3,7 +3,7 @@ export const seedData = {
       "household",
       "work",
       "travel",
-      "healthWellness",
+      "health wellness",
       "events",
       "education",
       "shopping",
@@ -79,7 +79,7 @@ export const seedData = {
         dueDate: "05/11/2024",
         status: "done",
         priority: "low",
-        project: "healthWellness",
+        project: "health wellness",
         tags: ["fitness"],
       },
       {
@@ -160,7 +160,7 @@ export const seedData = {
         dueDate: "30/11/2024",
         status: "inProgress",
         priority: "high",
-        project: "healthWellness",
+        project: "health wellness",
         tags: ["fitness"],
       },
       {

@@ -8,7 +8,6 @@ import { isAxiosError } from 'axios'
 export async function middleware(request: NextRequest) {    
     try {
         const currentURL = request.nextUrl.pathname
-        console.log(currentURL)
         const tokenCookie = request.cookies.get('token')?.value
 
         if((currentURL.startsWith('/login') || currentURL.startsWith('/register') ) && !tokenCookie) {

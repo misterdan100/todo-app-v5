@@ -10,23 +10,26 @@ type Props = {
 export async function generateMetadata({params}: Props, parent: ResolvingMetadata): Promise<Metadata> {
   const {slug} = await params
 
+  const pageName = slug.replaceAll('-', ' ')
+
   return {
-    title: `${capitalizeText(slug)} Project`
+    title: `${capitalizeText(pageName)} Project`
   }
 }
 
 export default async function ProjectPage({ params }: {params: Promise<{slug: string}>}) {
   const { slug } = await params
+  const pageName = slug.replaceAll('-', ' ')
   
   
   
   return (
     <>
     {/* Title */}
-      <HeaderPage title={`${capitalizeText(slug)} Tag`} />
+      <HeaderPage title={`${capitalizeText(pageName)} Project`} />
 
       {/* <ShowTasksSection page='pending'/> */}
-      <ProjectSection project={slug}/>
+      <ProjectSection project={pageName}/>
     </>
   )
 }

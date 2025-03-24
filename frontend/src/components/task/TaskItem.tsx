@@ -19,6 +19,7 @@ import { useRouter } from "next/navigation";
 import { addTasksToShow } from "@/store/tasks/tasksSlice";
 import { useTasks } from "@/hooks";
 import { mutate } from "swr";
+import { toast } from "sonner";
 
 type Props = {
   task: Task;
@@ -61,19 +62,19 @@ export const TaskItem = ({ task }: Props) => {
   };
 
   const handleDeleteTask = async () => {
-    try {
+
       const res = await deleteTask({taskId: id});
-      if(res) {
+      if(res.success) {
 
         mutate(keyCache)
-        console.log(keyCache)
         if(keyCache !== '/tasks') {
           mutate('/tasks')
         }
+        toast.success(res.message)
+        return
+
       }
-    } catch (error) {
-      console.error("Error deleting task:", error);
-    }
+      toast.error(res.message)
   };
 
   // If this task has been marked as deleted, don't render it

@@ -5,13 +5,14 @@ import { IoList, IoLogoGithub, IoMoon, IoPersonSharp } from "react-icons/io5";
 import Link from "next/link";
 import styled from "styled-components";
 import Image from "next/image";
-import { CreateTaskModal } from "../modals/CreateTaskModal";
+import { CreateTaskModal } from "../modals/CreateTaskModal/CreateTaskModal";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "@/store/store";
 import { switchSidebarMain, switchSidebarRight } from "@/store/ui/sidebarSlice";
 import { useRouter } from "next/navigation";
 import { verifySession } from "@/store/auth/sessionSlice";
+import { mutate } from "swr";
 
 
 const { mainColor } = uiConfig;
@@ -40,10 +41,9 @@ export const Header = () => {
   );
   const [totalTasks, setTotalTasks] = useState(0);
 
-  // const { tasks } = useTasks({})
-
   useEffect(() => {
     dispatch(verifySession())
+    mutate('/tasks')
     setTotalTasks(allTasks.length);
 
   }, [allTasks]);

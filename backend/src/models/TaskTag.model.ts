@@ -8,6 +8,11 @@ import Tag from "./Tag.model";
 })
 
 class TaskTag extends Model {
+    @Column({
+        type: DataType.UUID
+    })
+    declare userId: string
+
     @ForeignKey(() => Task)
     @Column({
         type: DataType.UUID,

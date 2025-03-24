@@ -1,6 +1,7 @@
 import { Column, DataType, Default, ForeignKey, HasMany, IsUUID, Model, PrimaryKey, Table } from "sequelize-typescript";
 import Project from "./Project.model";
 import Task from "./Task.model";
+import Tag from "./Tag.model";
 
 // id, name, email, password, token, tasks, projects
 
@@ -43,6 +44,9 @@ class User extends Model {
 
     @HasMany(() => Task)
     tasks!: Task[]
+
+    @HasMany(() => Tag)
+    tags!: Tag[]
 }
 
 export default User

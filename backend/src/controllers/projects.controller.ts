@@ -5,7 +5,10 @@ import { seedData } from '../data/seed_data';
 
 export const getProjects = async (req: Request, res: Response) => {
     try {
+        const userId = req.user.id
+
         const projects = await Project.findAll({
+            where: {userId},
             order: [['name', 'ASC']]
         })
 
@@ -19,7 +22,10 @@ export const getProjects = async (req: Request, res: Response) => {
 
 export const getProjectsWithTasks = async (req: Request, res: Response) => {
     try {
+        const userId = req.user.id
+
         const projects = await Project.findAll({
+            where: {userId},
             include: [Task]
         })
 
@@ -37,9 +43,13 @@ export const getProjectsWithTasks = async (req: Request, res: Response) => {
 
 export const getProjectByName = async (req: Request, res: Response) => {
     try {
+        const userId = req.user.id
+
         const { name } = req.params
 
-        const project = await Project.findOne({where: {name: name}, include: [Task]})
+        const project = await Project.findOne({
+            where: {name: name, userId}, 
+            include: [Task]})
 
         if(!project) {
             res.status(404).json({error: 'Project not found'})
@@ -92,13 +102,18 @@ export const getTasksByProject = async (req: Request, res: Response) => {
 
 export const createProject = async (req: Request, res: Response) => {
     try {
+        const userId = req.user.id
+
         // validate if name exists
         if (!req.body.name) {
             res.status(500).json({ error: 'A project name is required' });
             return
         }
 
-        const newProject = await Project.create({ name: req.body.name.trim() });
+        const newProject = await Project.create({ 
+            name: req.body.name.trim(),
+            userId
+        });
 
         if (!newProject) {
             res.status(500).json({ error: 'Error creating project' });
@@ -160,12 +175,15 @@ export const deleteProject = async (req: Request, res: Response) => {
 
 export const seedProjects = async (req: Request, res: Response) => {
     try {
-        await Project.destroy({where: {}})
+        const userId = req.user.id
+        await Project.destroy({where: {
+            userId
+        }})
 
-        const projects = seedData.projects.map(item => ({name: item}))
+        const projects = seedData.projects.map(item => ({name: item, userId}))
 
         await Project.bulkCreate(projects)
-        const projectsDB = await Project.findAll()
+        const projectsDB = await Project.findAll({where: {userId}})
 
         res.status(200).json(projectsDB)
         

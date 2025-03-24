@@ -38,7 +38,7 @@ export function ProjectCard({ project, className, ...props }: Props) {
       <Card className={cn(" h-fit", className)} {...props}>
         <CardHeader className="pb-0">
           <CardTitle>
-            <Link href={`/projects/${name}`}>
+            <Link href={`/projects/${name.replaceAll(' ', '-')}`}>
               <StyledTitle>{name.toLocaleUpperCase()}</StyledTitle>
             </Link>
           </CardTitle>

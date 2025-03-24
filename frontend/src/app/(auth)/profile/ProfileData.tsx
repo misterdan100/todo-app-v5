@@ -6,7 +6,7 @@ import { useDispatch, useSelector } from "react-redux";
 
 import { Button } from "@/components/ui/button";
 import { generateRandomReadableColor } from "@/utils";
-import { IoCreate, IoLogOut, IoTrash } from "react-icons/io5";
+import { IoColorWand, IoCreate, IoLogOut, IoTrash } from "react-icons/io5";
 import { logoutUser } from "@/api/auth/logoutUser";
 import { verifySession } from "@/store/auth/sessionSlice";
 import { useRouter } from "next/navigation";
@@ -14,6 +14,7 @@ import { toast } from "sonner";
 import { useEffect, useState } from "react";
 import { uiConfig } from "@/config/uiConfig";
 import { DeleteProfileModal, EditProfileModal } from "@/components";
+import Link from "next/link";
 
 export const ProfileData = ({bgColor}: {bgColor: string}) => {
   const router = useRouter()
@@ -92,6 +93,12 @@ export const ProfileData = ({bgColor}: {bgColor: string}) => {
           </div>
 
           <div className="w-full grid grid-cols-2 justify-center items-center pt-4 mt-4 gap-4 px-4 border-t-2 border-gray-200">
+            <Link href='/seed' >
+
+              <Button variant='outline' className="w-full">
+                <IoColorWand className="text-gray-800 w-8 h-8 scale-125"/>
+                Seed Data</Button>
+            </Link>
             <DeleteProfileModal />
           </div>
         </div>

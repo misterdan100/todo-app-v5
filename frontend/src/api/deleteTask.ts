@@ -5,13 +5,12 @@ export const deleteTask = async ({taskId}: {taskId: string}) => {
 
     try {
         const url = `/tasks/${taskId}`
-        await axios.delete(url)
+        const {data} = await axios.delete(url)
 
-
-        return true
+        return data
     } catch (error) {
         console.log('Error deleting task')
-        return false
+        return {success: false, message: 'Error deleting task'}
     }
 
 }

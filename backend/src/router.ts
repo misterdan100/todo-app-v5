@@ -4,7 +4,8 @@ import projectsRoutes from './routes/projects.routes'
 import tasksRoutes from './routes/tasks.routes'
 import tagsRoutes from './routes/tags.routes'
 import usersRoutes from './routes/users.routes'
-import { clearAndSeed } from "./controllers/seed.controller";
+import { clearData } from "./controllers/seed.controller";
+import authenticate from "./middleware/auth";
 
 const router = Router()
 
@@ -20,7 +21,7 @@ router.get('/ping', async (req, res) => {
     res.send(result[0][0])
 })
 
-router.get('/seedData', clearAndSeed)
+router.get('/clearData',authenticate, clearData)
 
 
 router.use(projectsRoutes)

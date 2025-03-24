@@ -1,7 +1,11 @@
 import { Router } from "express";
 import { createProject, deleteProject, getProjectById, getProjectByName, getProjects, getProjectsWithTasks, getTasksByProject, seedProjects, updateProject } from "../controllers/projects.controller";
+import authenticate from "../middleware/auth";
 
 const router = Router()
+
+router.use('/projects', authenticate)
+router.use('/projects/*', authenticate)
 
 router.get('/projects', getProjects)
 router.get('/projects/tasks', getProjectsWithTasks)

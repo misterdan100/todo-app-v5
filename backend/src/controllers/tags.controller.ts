@@ -3,10 +3,12 @@ import Tag from '../models/Tag.model'
 import { seedData } from '../data/seed_data'
 import Task from '../models/Task.model'
 import { generateRandomReadableColor } from '../utils/genRandomColor'
+import TaskTag from '../models/TaskTag.model'
 
 export const getTags = async (req: Request, res: Response ) => {
     try {
-        const tags = await Tag.findAll()
+        const userId = req.user.id
+        const tags = await Tag.findAll({where: {userId}})
 
         res.status(200).json(tags)
         
@@ -18,10 +20,15 @@ export const getTags = async (req: Request, res: Response ) => {
 
 export const getTagByName = async (req: Request, res: Response ) => {
     try {
+        const userId = req.user.id
+
         const { tagName } = req.params
         
         const tag = await Tag.findOne({
-            where: {name: tagName}
+            where: {
+                name: tagName,
+                userId
+            }
         })
 
         if(!tag) {
@@ -57,7 +64,10 @@ export const getTagById = async (req: Request, res: Response ) => {
 
 export const getTagsWithTasks = async (req: Request, res: Response) => {
     try {
+        const userId = req.user.id
+
         const tags = await Tag.findAll({
+            where: {userId},
             include: [Task]
         })
 
@@ -71,6 +81,7 @@ export const getTagsWithTasks = async (req: Request, res: Response) => {
 
 export const createTag = async (req: Request, res: Response) => {
     try {
+        const userId = req.user.id
         const name = req.body
 
         if(!name) {
@@ -78,7 +89,7 @@ export const createTag = async (req: Request, res: Response) => {
             return
         }
 
-        const tag = await Tag.create(name)
+        const tag = await Tag.create({...name, userId})
 
         res.status(200).json(tag)
         
@@ -90,7 +101,7 @@ export const createTag = async (req: Request, res: Response) => {
 
 export const deleteTag = async (req: Request, res: Response) => {
     try {
-        // const 
+        //Todo: create delete tag function
         
     } catch (error) {
         console.log('[ERROR_DETETAG]', error.message)
@@ -100,16 +111,18 @@ export const deleteTag = async (req: Request, res: Response) => {
 
 export const getTasksByTag = async (req: Request, res: Response) => {
     try {
+        const userId = req.user.id
         const name = req.params.name
+        console.log(`Consulta: tag: ${name}, userId: ${userId}`)
 
         const tag = await Tag.findOne({
-            where: {name}
+            where: {name, userId}
         })
 
         const tasks = await Task.findAll({
             include: [{
                 model: Tag,
-                where: { name: name }
+                where: { name: name, userId }
             }]
         })
 
@@ -124,16 +137,22 @@ export const getTasksByTag = async (req: Request, res: Response) => {
     }
 }
 
-export const seedTags = async (req, res: Response) => {
+export const seedTags = async (req:Request, res: Response) => {
     try {
+        const userId = req.user.id
 
-        await Tag.destroy({where: {}})
+        await TaskTag.destroy({where: {userId}})
+        await Tag.destroy({where: {userId}})
 
-        const seedTags = seedData.tags.map(item => ({name: item, color: generateRandomReadableColor()}))
+        const seedTags = seedData.tags.map(item => ({
+            name: item,
+            color: generateRandomReadableColor(),
+            userId
+        }))
 
         await Tag.bulkCreate(seedTags)
 
-        const tags = await Tag.findAll()
+        const tags = await Tag.findAll({where: {userId}})
         res.status(200).json(tags)
         
     } catch (error) {

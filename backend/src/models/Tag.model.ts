@@ -1,6 +1,7 @@
-import { BelongsToMany, Column, DataType, Default, IsUUID, Model, PrimaryKey, Table } from "sequelize-typescript";
+import { BelongsTo, BelongsToMany, Column, DataType, Default, ForeignKey, IsUUID, Model, PrimaryKey, Table } from "sequelize-typescript";
 import Task from "./Task.model";
 import TaskTag from "./TaskTag.model";
+import User from "./User.model";
 
 @Table({
     tableName: 'tags',
@@ -29,6 +30,16 @@ class Tag extends Model {
     // Relation with task (many to many)
     @BelongsToMany(() => Task, () => TaskTag)
     tasks!: Task[]
+
+    // Ralation with User (one to many)
+    @ForeignKey(() => User)
+    @Column({
+        type: DataType.UUID
+    })
+    declare userId: string
+
+    @BelongsTo(() => User)
+    user: User
 }
 
 export default Tag

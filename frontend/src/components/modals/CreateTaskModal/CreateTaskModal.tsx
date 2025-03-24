@@ -40,9 +40,9 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { cn } from "@/lib/utils";
 import { Calendar } from "@/components/ui/calendar";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { Textarea } from "../ui/textarea";
+import { Textarea } from '../../ui/textarea';
 import { Toggle } from "@/components/ui/toggle";
-import { IoStarSharp } from "react-icons/io5";
+import { IoFlag, IoStarSharp } from "react-icons/io5";
 import clsx from "clsx";
 import { useEffect, useState } from "react";
 import { mutate } from "swr";
@@ -51,6 +51,9 @@ import { AppDispatch, RootState } from "@/store/store";
 import { switchModal } from "@/store/ui/modalSlice";
 import { useRouter, useSearchParams } from "next/navigation";
 import { createTask } from "@/api";
+import { capitalizeText } from "@/utils";
+import { TagsSection } from "./TagsSection";
+import { toast } from "sonner";
 
 const formSchema = z.object({
   name: z
@@ -108,23 +111,27 @@ export function CreateTaskModal() {
 
       const res = await createTask(formData)
 
-      if(res) {
+      if(res.success) {
         form.reset();
         mutate(keyCache)
         mutate('/tasks')
         dispatch(switchModal(false))
+        toast.success(res.message, {
+          description: res.data.name
+        })
         router.refresh()
       }
     } catch (error) {
+      toast.error("Error creating task:")
       console.error("Error creating task:", error);
     }
   };
 
   return (
-    <Dialog 
-      // onOpenChange={() => dispatch(switchModal(!isOpen))} 
+    <Dialog
+      // onOpenChange={() => dispatch(switchModal(!isOpen))}
       onOpenChange={(open) => dispatch(switchModal(open))}
-      open={isOpen} 
+      open={isOpen}
     >
       <DialogTrigger asChild>
         <Button
@@ -245,9 +252,28 @@ export function CreateTaskModal() {
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
-                        <SelectItem value="low">Low</SelectItem>
-                        <SelectItem value="medium">Medium</SelectItem>
-                        <SelectItem value="high">High</SelectItem>
+
+                        <SelectItem value="low" className="flex w-full flex-row">
+                          <div className="flex items-center gap-2">
+                          <IoFlag className="text-yellow-300" />
+                          <span>Low</span>
+                          </div>
+                        </SelectItem>
+
+                        <SelectItem value="medium" className="flex w-full flex-row">
+                        <div className="flex items-center gap-2">
+                          <IoFlag className="text-amber-600" />
+                          <span>Medium</span>
+                          </div>
+                        </SelectItem>
+
+                        <SelectItem value="high" className="flex w-full flex-row">
+                        <div className="flex items-center gap-2">
+                          <IoFlag className="text-red-600" />
+                          <span>High</span>
+                          </div>
+                        </SelectItem>
+
                       </SelectContent>
                     </Select>
                     <FormMessage />
@@ -313,7 +339,7 @@ export function CreateTaskModal() {
                     <SelectContent>
                       {projects.map((item) => (
                         <SelectItem key={item.id} value={item.id}>
-                          {item.name}
+                          {capitalizeText(item.name)}
                         </SelectItem>
                       ))}
                     </SelectContent>
@@ -323,14 +349,21 @@ export function CreateTaskModal() {
               )}
             />
 
+            <FormField
+              control={form.control}
+              name="description"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Tags</FormLabel>
+                  <TagsSection />
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
 
-              <Button 
-              
-              className="bg-green-600 hover:bg-green-500" type="submit"
-              >
-                Create Task
-              </Button>
-
+            <Button className="bg-green-600 hover:bg-green-500" type="submit">
+              Create Task
+            </Button>
           </form>
         </Form>
       </DialogContent>
