@@ -57,11 +57,11 @@ if( isSidebarRightOpen && session ) return (
           onClick={() => console.log("click profile")}
         >
           <Image
-            src={"/logo.png"}
+            src={"/logo.svg"}
             alt="avatar"
-            width={70}
-            height={70}
-            className="rounded-full"
+            width={50}
+            height={50}
+            className=""
           />
 
           <div>

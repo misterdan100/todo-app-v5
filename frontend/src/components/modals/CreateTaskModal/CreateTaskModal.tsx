@@ -1,6 +1,5 @@
 "use client";
 
-import axios from "@/config/axios";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -9,7 +8,7 @@ import {
   DialogDescription,
   DialogHeader,
   DialogTitle,
-  DialogTrigger
+  DialogTrigger,
 } from "@/components/ui/dialog";
 import {
   Form,
@@ -40,20 +39,18 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { cn } from "@/lib/utils";
 import { Calendar } from "@/components/ui/calendar";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { Textarea } from '../../ui/textarea';
+import { Textarea } from "../../ui/textarea";
 import { Toggle } from "@/components/ui/toggle";
 import { IoFlag, IoStarSharp } from "react-icons/io5";
 import clsx from "clsx";
 import { useEffect, useState } from "react";
-import { mutate } from "swr";
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "@/store/store";
 import { switchModal } from "@/store/ui/modalSlice";
-import { useRouter, useSearchParams } from "next/navigation";
-import { createTask } from "@/api";
-import { capitalizeText } from "@/utils";
+import { useRouter } from "next/navigation";
 import { TagsSection } from "./TagsSection";
 import { toast } from "sonner";
+import { SelectProject } from "./SelectProject";
 
 const formSchema = z.object({
   name: z
@@ -62,75 +59,75 @@ const formSchema = z.object({
     .max(50, { message: "Title must be less than 50 characters." }),
   favorite: z.boolean().default(false),
   description: z.string().optional(),
-  priority: z.string(),
+  priority: z.string().optional(),
   dueDate: z.date().optional(),
-  projectId: z.string().optional(),
+  projectId: z.object({id: z.string(), name: z.string()}).optional(),
   status: z.enum(["completed", "pending", "overdue"]),
+  tags: z.array(z.object({id: z.string(), name: z.string()})),
 });
 
 // function componente ////////////////////////////////////////////////////////////
 export function CreateTaskModal() {
-  const router = useRouter()
+  const router = useRouter();
 
-  const isOpen = useSelector( (state: RootState) => state.modal.isOpen)
-  const keyCache = useSelector( (state: RootState) => state.tasks.keyCache)
-  const dispatch = useDispatch<AppDispatch>()
+  // Redux Toolkit states
+  const isOpen = useSelector((state: RootState) => state.modal.isOpen);
+  const keyCache = useSelector((state: RootState) => state.tasks.keyCache);
+  const dispatch = useDispatch<AppDispatch>();
 
   const [projects, setProjects] = useState<{ id: string; name: string }[]>([]);
+
+  // Reack-hook-form initial state
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       name: "",
       favorite: false,
-      description: "",
-      priority: "",
+      description: undefined,
+      priority: undefined,
       dueDate: undefined,
-      projectId: "",
+      projectId: undefined,
       status: "pending",
+      tags: [],
     },
   });
 
-  const getProjects = async () => {
-    try {
-      const { data } = await axios("/projects");
-      setProjects(data);
-    } catch (error) {
-      console.log("ERROR_GETPROJECTS_MODEL", error);
-    }
-  };
-
-  useEffect(() => {
-    getProjects();
-    form.reset()
-  }, []);
-
   const isFavorite = form.watch("favorite");
 
+  useEffect(() => {
+    form.reset();
+  }, []);
+
+
   const onSubmit = async (formData: z.infer<typeof formSchema>) => {
+    console.log(formData);
+    toast.success("Sending form data");
     try {
-
-      const res = await createTask(formData)
-
-      if(res.success) {
-        form.reset();
-        mutate(keyCache)
-        mutate('/tasks')
-        dispatch(switchModal(false))
-        toast.success(res.message, {
-          description: res.data.name
-        })
-        router.refresh()
-      }
+      // const res = await createTask(formData)
+      // if(res.success) {
+      //   form.reset();
+      //   mutate(keyCache)
+      //   mutate('/tasks')
+      //   dispatch(switchModal(false))
+      //   toast.success(res.message, {
+      //     description: res.data.name
+      //   })
+      //   router.refresh()
+      // }
     } catch (error) {
-      toast.error("Error creating task:")
+      toast.error("Error creating task:");
       console.error("Error creating task:", error);
     }
   };
 
   return (
     <Dialog
-      // onOpenChange={() => dispatch(switchModal(!isOpen))}
-      onOpenChange={(open) => dispatch(switchModal(open))}
+      onOpenChange={(open) => {
+        if (open === false) {
+          form.reset();
+        }
+        dispatch(switchModal(open));
+      }}
       open={isOpen}
     >
       <DialogTrigger asChild>
@@ -172,7 +169,6 @@ export function CreateTaskModal() {
                 }
               >
                 <IoStarSharp
-                  // className={`${form.getValues().favorite ? 'text-yellow-500' : 'text-gray-600'}`}
                   className={clsx(isFavorite && "text-yellow-500")}
                 />
               </Toggle>
@@ -187,7 +183,6 @@ export function CreateTaskModal() {
                   <FormControl>
                     <Textarea
                       placeholder="Info about the task..."
-                      // className="resize-none"
                       {...field}
                     />
                   </FormControl>
@@ -252,28 +247,35 @@ export function CreateTaskModal() {
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
-
-                        <SelectItem value="low" className="flex w-full flex-row">
+                        <SelectItem
+                          value="low"
+                          className="flex w-full flex-row"
+                        >
                           <div className="flex items-center gap-2">
-                          <IoFlag className="text-yellow-300" />
-                          <span>Low</span>
+                            <IoFlag className="text-yellow-300" />
+                            <span>Low</span>
                           </div>
                         </SelectItem>
 
-                        <SelectItem value="medium" className="flex w-full flex-row">
-                        <div className="flex items-center gap-2">
-                          <IoFlag className="text-amber-600" />
-                          <span>Medium</span>
+                        <SelectItem
+                          value="medium"
+                          className="flex w-full flex-row"
+                        >
+                          <div className="flex items-center gap-2">
+                            <IoFlag className="text-amber-600" />
+                            <span>Medium</span>
                           </div>
                         </SelectItem>
 
-                        <SelectItem value="high" className="flex w-full flex-row">
-                        <div className="flex items-center gap-2">
-                          <IoFlag className="text-red-600" />
-                          <span>High</span>
+                        <SelectItem
+                          value="high"
+                          className="flex w-full flex-row"
+                        >
+                          <div className="flex items-center gap-2">
+                            <IoFlag className="text-red-600" />
+                            <span>High</span>
                           </div>
                         </SelectItem>
-
                       </SelectContent>
                     </Select>
                     <FormMessage />
@@ -294,7 +296,7 @@ export function CreateTaskModal() {
                         <Button
                           variant={"outline"}
                           className={cn(
-                            "w-[240px] pl-3 text-left font-normal",
+                            "w-[50%] pl-3 text-left font-normal",
                             !field.value && "text-muted-foreground"
                           )}
                         >
@@ -325,25 +327,11 @@ export function CreateTaskModal() {
               control={form.control}
               name="projectId"
               render={({ field }) => (
-                <FormItem>
+                <FormItem className="grid gap-1">
                   <FormLabel>Project</FormLabel>
-                  <Select
-                    onValueChange={field.onChange}
-                    defaultValue={field.value}
-                  >
-                    <FormControl>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Select one" />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                      {projects.map((item) => (
-                        <SelectItem key={item.id} value={item.id}>
-                          {capitalizeText(item.name)}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
+                  <SelectProject
+                    onSelect={field.onChange}
+                  />
                   <FormMessage />
                 </FormItem>
               )}
@@ -351,19 +339,34 @@ export function CreateTaskModal() {
 
             <FormField
               control={form.control}
-              name="description"
+              name="tags"
               render={({ field }) => (
-                <FormItem>
+                <FormItem className="grid">
                   <FormLabel>Tags</FormLabel>
-                  <TagsSection />
-                  <FormMessage />
+                  <FormControl>
+                    <TagsSection 
+                      onSelect={field.onChange} 
+                    />
+                  </FormControl>
+                  {/* <FormMessage /> */}
                 </FormItem>
               )}
             />
 
-            <Button className="bg-green-600 hover:bg-green-500" type="submit">
+            <Button 
+              className={cn(
+                'bg-green-600 hover:bg-green-500 w-full',
+                form.formState.errors.name && 'disable opacity-50 hover:bg-green-600 cursor-default'
+
+              )} 
+              type="submit"
+              style={{
+                marginTop: '24px'
+              }}
+            >
               Create Task
             </Button>
+
           </form>
         </Form>
       </DialogContent>

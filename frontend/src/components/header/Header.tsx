@@ -53,7 +53,7 @@ export const Header = () => {
       {/* Title, name and tasks */}
       <div className="flex items-center gap-2 text-center md:text-start">
         <Link href="/" className="flex items-center justify-center sm:hidden">
-          <Image src="/logo.png" width={28} height={28} alt="logo" />
+          <Image src="/logotipo.svg" width={80} height={80} alt="logo" />
         </Link>
         <div>
           <h1 className="text-lg font-medium">

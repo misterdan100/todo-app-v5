@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="-13.822 -1.382 500 500">
+  <defs>
+    <linearGradient id="SvgjsLinearGradient3790">
+      <stop id="SvgjsStop3791" stop-color="#6d7cff" offset="0"></stop>
+      <stop id="SvgjsStop3792" stop-color="#ff51ff" offset="1"></stop>
+    </linearGradient>
+  </defs>
+  <g id="SvgjsG3786" featurekey="YvLwfh-0" transform="matrix(152.547, 0, 0, 152.547, -147.436, -135.404)" fill="url(#SvgjsLinearGradient3790)" style="">
+    <g xmlns="http://www.w3.org/2000/svg">
+      <g>
+        <polygon fill="url(#SvgjsLinearGradient3790)" points="2.499,1.705 4.062,2.605 4.062,1.854 2.498,0.953 0.938,1.855 0.938,2.607   "></polygon>
+      </g>
+      <g>
+        <polygon fill="url(#SvgjsLinearGradient3790)" points="3.812,3.51 4.062,3.363 4.062,2.902 2.498,2 0.938,2.902 0.938,3.365 1.188,3.51 2.498,2.752       "></polygon>
+      </g>
+      <g>
+        <polygon fill="url(#SvgjsLinearGradient3790)" points="2.499,3.818 2.896,4.047 3.548,3.672 2.498,3.066 1.452,3.672 2.104,4.047   "></polygon>
+      </g>
+    </g>
+  </g>
+</svg>

@@ -97,7 +97,7 @@ export const Sidebar = () => {
         className="flex items-center justify-center h-[5rem] w-full mt-4"
         onClick={() => setShowItemTexts((prev) => !prev)}
       >
-        <Image src="/logo.png" width={28} height={28} alt="logo" />
+        <Image src="/logotipo.svg" width={100} height={100} alt="logo" />
       </Link>
 
       <div className="flex flex-col items-center  px-2">
