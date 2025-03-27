@@ -13,6 +13,7 @@ import { switchSidebarMain, switchSidebarRight } from "@/store/ui/sidebarSlice";
 import { useRouter } from "next/navigation";
 import { verifySession } from "@/store/auth/sessionSlice";
 import { mutate } from "swr";
+import { useTasks } from "@/hooks";
 
 
 const { mainColor } = uiConfig;
@@ -31,7 +32,6 @@ export const Header = () => {
   const router = useRouter()
   const user = useSelector( (state: RootState) => state.session.user)
   const dispatch = useDispatch<AppDispatch>();
-
   const allTasks = useSelector((state: RootState) => state.tasks.allTasks);
   const isSidebarRightOpen = useSelector(
     (state: RootState) => state.sidebar.isSidebarRightOpen
@@ -40,12 +40,12 @@ export const Header = () => {
     (state: RootState) => state.sidebar.isSidebarMainOpen
   );
   const [totalTasks, setTotalTasks] = useState(0);
+  const {} = useTasks({})
 
   useEffect(() => {
     dispatch(verifySession())
     mutate('/tasks')
     setTotalTasks(allTasks.length);
-
   }, [allTasks]);
 
   return (

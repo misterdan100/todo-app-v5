@@ -5,19 +5,6 @@ import { IoCloseCircleOutline } from "react-icons/io5";
 import { AddTag } from "./AddTag";
 import { useTags } from "@/hooks";
 
-const existingTags = [
-  "household",
-  "work",
-  "travel",
-  "health wellness",
-  "events",
-  "education",
-  "shopping",
-  "entertainment",
-  "family",
-  "hobbies",
-];
-
 type Tag = {
   id: string;
   name: string;

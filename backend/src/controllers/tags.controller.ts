@@ -68,7 +68,8 @@ export const getTagsWithTasks = async (req: Request, res: Response) => {
 
         const tags = await Tag.findAll({
             where: {userId},
-            include: [Task]
+            include: [Task],
+            order: [['name', 'ASC']]
         })
 
         res.status(200).json(tags)
@@ -113,7 +114,6 @@ export const getTasksByTag = async (req: Request, res: Response) => {
     try {
         const userId = req.user.id
         const name = req.params.name
-        console.log(`Consulta: tag: ${name}, userId: ${userId}`)
 
         const tag = await Tag.findOne({
             where: {name, userId}

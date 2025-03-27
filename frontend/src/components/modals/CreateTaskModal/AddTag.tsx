@@ -108,7 +108,7 @@ function StatusList({
     // Function to handle creating a new tag from search
     const handleCreateTag = (value: string) => {
       // Generate a temporary ID - in production you'd call your API
-      const newTag = { id: `new-${Date.now()}`, name: value };
+      const newTag = { id: `new-${Date.now()}`, name: value.toLowerCase().trim() };
       
       // Select the new tag
       handleSelectTag(newTag);
@@ -149,7 +149,7 @@ function EmptyStateWithAction({ onCreate }: { onCreate: (value: string) => void 
     <div className="flex flex-col items-center justify-center p-4 gap-2">      
       <div 
         className="flex items-center gap-2 cursor-pointer hover:text-primary transition-colors"
-        onClick={() => onCreate(search)}
+        onClick={() => onCreate(search.toLowerCase().trim())}
       >
         <IoAddCircleOutline size={18} />
         <span className="text-sm">Create "{search}" tag</span>

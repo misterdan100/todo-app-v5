@@ -4,6 +4,7 @@ import Project from '../models/Project.model'
 import { seedData } from '../data/seed_data'
 import Tag from '../models/Tag.model'
 import TaskTag from '../models/TaskTag.model'
+import { createTag } from './utils/createTag'
 
 export const getTasks = async (req: Request, res: Response) => {
     try {
@@ -57,31 +58,85 @@ export const createTask = async (req: Request, res: Response) => {
 
         // Validate if task has a name
         if(!newTaskData.name) {
-            res.status(400).json({ success: false ,message: 'Task name is required'})
+            res.status(400).json({ success: false, message: 'Task name is required'})
             return
-        }
-        const { projectId, ...rest } = newTaskData 
+        } 
         
         // Create task with project
-        if(projectId && projectId !== '') {
-            const project = await Project.findByPk(newTaskData.projectId)
-            if(!project) {
-                res.status(400).json({ success: false ,message: 'Project id not found'})
-                return
-            }
+        if(newTaskData.project) {
+            const projectFromBody = newTaskData.project
 
-            const newTask = await Task.create({...rest, userId})
-            
-            // await project.$add( 'tasks' , newTask)
-            newTask.projectId = projectId
-            await newTask.save()
-            res.status(200).json({success: true, message: 'Task created', data: {name: newTask.name}})
-            return
+            // If is a new project
+            if(projectFromBody.id.includes('new-')) {
+                const newProjectDB = await Project.create({name: projectFromBody.name, userId})
+                newTaskData.projectId = newProjectDB.id
+
+            } else {
+                // if is a existing project
+                const project = await Project.findByPk(newTaskData.project.id)
+                if(!project) {
+                    res.status(400).json({ success: false ,message: 'Project id not found'})
+                    return
+                }
+    
+                newTaskData.projectId = project.id
+            }
         }
 
-        await Task.create({...rest, userId})
+        // Evaluate Tags
+        if(newTaskData.tags.length) {
+            const findTagInDB = async (tagId: string) => {
+                const tag = await Tag.findByPk(tagId)
+                return tag.id
+            } 
 
-        res.status(200).json({success: true, message: 'Task created'})
+            const cleanedTags = newTaskData.tags.map( async (item: {id: string, name: string}) => {
+                // if is a new tag
+                if(item.id.includes('new-')) {
+                    const tag = await createTag({name: item.name, userId})
+                    return tag.id
+                } 
+
+                //if is a existing tag
+                return await findTagInDB(item.id)
+            }) 
+
+            newTaskData.tags = await Promise.all(cleanedTags)
+        }
+
+        newTaskData.priority = newTaskData.priority ?? 'low'
+
+        const {name, description, dueDate, favorite, priority, status, tags} = newTaskData
+
+
+        const newTask = {
+            userId,
+            name, 
+            description, 
+            dueDate, 
+            favorite, 
+            priority, 
+            projectId: newTaskData.projectId ?? undefined, 
+            status, 
+            tags
+        }
+
+        const task = await Task.create(newTask)
+
+        // Relationate task with tags
+        const relationObj: {taskId: string, tagId: string, userId: string}[] = [] 
+
+        newTask.tags.forEach( item => {
+            relationObj.push({
+                taskId: task.id,
+                tagId: item,
+                userId
+            })
+        })
+
+        await TaskTag.bulkCreate(relationObj)
+
+        res.status(200).json({success: true, message: 'Task created', data: task})
         
     } catch (error) {
         console.log('[ERROR_CREATETASK]', error.message)

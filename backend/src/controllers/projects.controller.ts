@@ -26,7 +26,8 @@ export const getProjectsWithTasks = async (req: Request, res: Response) => {
 
         const projects = await Project.findAll({
             where: {userId},
-            include: [Task]
+            include: [Task],
+            order: [['name', 'ASC']]
         })
 
         if(!projects) {

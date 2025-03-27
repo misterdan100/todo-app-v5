@@ -41,7 +41,7 @@ import { Calendar } from "@/components/ui/calendar";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Textarea } from "../../ui/textarea";
 import { Toggle } from "@/components/ui/toggle";
-import { IoFlag, IoStarSharp } from "react-icons/io5";
+import { IoFlag, IoReload, IoStarSharp } from "react-icons/io5";
 import clsx from "clsx";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
@@ -51,6 +51,8 @@ import { useRouter } from "next/navigation";
 import { TagsSection } from "./TagsSection";
 import { toast } from "sonner";
 import { SelectProject } from "./SelectProject";
+import { createTask } from "@/api";
+import { mutate } from "swr";
 
 const formSchema = z.object({
   name: z
@@ -61,7 +63,7 @@ const formSchema = z.object({
   description: z.string().optional(),
   priority: z.string().optional(),
   dueDate: z.date().optional(),
-  projectId: z.object({id: z.string(), name: z.string()}).optional(),
+  project: z.object({id: z.string(), name: z.string()}).optional(),
   status: z.enum(["completed", "pending", "overdue"]),
   tags: z.array(z.object({id: z.string(), name: z.string()})),
 });
@@ -76,6 +78,7 @@ export function CreateTaskModal() {
   const dispatch = useDispatch<AppDispatch>();
 
   const [projects, setProjects] = useState<{ id: string; name: string }[]>([]);
+  const [loadingSending, setLoadingSending] = useState(false)
 
   // Reack-hook-form initial state
   const form = useForm<z.infer<typeof formSchema>>({
@@ -86,7 +89,7 @@ export function CreateTaskModal() {
       description: undefined,
       priority: undefined,
       dueDate: undefined,
-      projectId: undefined,
+      project: undefined,
       status: "pending",
       tags: [],
     },
@@ -100,23 +103,26 @@ export function CreateTaskModal() {
 
 
   const onSubmit = async (formData: z.infer<typeof formSchema>) => {
-    console.log(formData);
-    toast.success("Sending form data");
+    setLoadingSending(true)
+
     try {
-      // const res = await createTask(formData)
-      // if(res.success) {
-      //   form.reset();
-      //   mutate(keyCache)
-      //   mutate('/tasks')
-      //   dispatch(switchModal(false))
-      //   toast.success(res.message, {
-      //     description: res.data.name
-      //   })
-      //   router.refresh()
-      // }
+      const res = await createTask(formData)
+      if(res.success) {
+        form.reset();
+        mutate(keyCache)
+        mutate('/tasks')
+        mutate('/projects')
+        dispatch(switchModal(false))
+        toast.success(res.message, {
+          description: res.data.name
+        })
+        router.refresh()
+      }
     } catch (error) {
       toast.error("Error creating task:");
       console.error("Error creating task:", error);
+    } finally {
+      setLoadingSending(false)
     }
   };
 
@@ -315,6 +321,7 @@ export function CreateTaskModal() {
                         selected={field.value}
                         onSelect={field.onChange}
                         disabled={(date) => date < new Date("1990-01-01")}
+                        className=""
                       />
                     </PopoverContent>
                   </Popover>
@@ -325,7 +332,7 @@ export function CreateTaskModal() {
 
             <FormField
               control={form.control}
-              name="projectId"
+              name="project"
               render={({ field }) => (
                 <FormItem className="grid gap-1">
                   <FormLabel>Project</FormLabel>
@@ -364,6 +371,7 @@ export function CreateTaskModal() {
                 marginTop: '24px'
               }}
             >
+              { loadingSending && <IoReload className="animate-spin"/>}
               Create Task
             </Button>
 
