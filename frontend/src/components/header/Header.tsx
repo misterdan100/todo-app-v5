@@ -40,7 +40,11 @@ export const Header = () => {
     (state: RootState) => state.sidebar.isSidebarMainOpen
   );
   const [totalTasks, setTotalTasks] = useState(0);
+
+
   const {} = useTasks({})
+
+
 
   useEffect(() => {
     dispatch(verifySession())

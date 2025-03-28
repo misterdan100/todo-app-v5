@@ -19,6 +19,7 @@ import {
 import { useDispatch, useSelector } from "react-redux";
 import { useEffect, useState } from "react";
 import { motion } from "motion/react";
+import clsx from "clsx";
 
 export const Sidebar = () => {
   const isSidebarMainOpen = useSelector(
@@ -80,7 +81,7 @@ export const Sidebar = () => {
       link: "/tags",
     },
     {
-      icon: <IoAlbumsOutline color={getSelectedColor("/tags")} />,
+      icon: <IoAlbumsOutline color={getSelectedColor("/projects")} />,
       title: "Projects",
       link: "/projects",
     },
@@ -105,15 +106,17 @@ export const Sidebar = () => {
           {navItems.map((item, i) => (
             <li
               key={i}
-              className="relative group py-2 px-4 hover:bg-gray-200 transition-colors rounded-md"
+              className={clsx("relative group py-2 px-4 hover:bg-gray-200 transition-colors rounded-md",
+                {'text-primary bg-gray-100': pathname === item.link}
+              )}
             >
               <Link
                 href={item.link}
-                className="text-[22px] flex items-center gap-2"
+                className='text-[22px] flex items-center gap-2'
               >
                 {item.icon}
                 {showItemTexts && (
-                  <p className="text-base antialiased font-normal text-gray-600">
+                  <p className="text-base antialiased font-normal ">
                     {item.title}
                   </p>
                 )}

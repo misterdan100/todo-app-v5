@@ -1,10 +1,12 @@
 // this hook get tasks from api, set them in swr cache,
 // set them in redux store tasks, and return tasks from api
 
+import { revalidate } from "@/app/page";
 import axios from "@/config/axios";
 import { Task } from "@/interface";
 import { AppDispatch } from "@/store/store";
 import { addKeyCache, addTasks, addTasksToShow } from "@/store/tasks/tasksSlice";
+import { config } from "process";
 import { useDispatch } from "react-redux";
 import useSWR from "swr";
 
@@ -18,10 +20,14 @@ export function useTasks({showTasks = false}: {showTasks?: boolean}) {
   
   const { data, error, isLoading, mutate, isValidating } = useSWR(url, fetcher, {
     dedupingInterval: 2000, // Evita solicitudes duplicadas en un corto tiempo
+    onErrorRetry: (error, key, config, revalidate, { retryCount }) => {
+      // Only retry up to 2 times (for a total of 3 requests including the initial one)
+      if (retryCount >= 2) return;
+    }
   });
 
   if(error) {
-    console.log(error)
+    console.log(error.response.data.message)
   }
   
   if(data) {

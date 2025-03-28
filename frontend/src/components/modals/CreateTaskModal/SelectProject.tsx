@@ -23,6 +23,8 @@ import { useProjects } from "@/hooks";
 import { capitalizeText } from "@/utils";
 import { useCommandState } from "cmdk";
 import { IoAddCircleOutline } from "react-icons/io5";
+import { useSelector } from "react-redux";
+import { RootState } from "@/store/store";
 
 type Project = {
   id: string;
@@ -36,9 +38,23 @@ type Props = {
 export function SelectProject({onSelect: onSelect2}: Props) {
   const [open, setOpen] = React.useState(false);
   const [value, setValue] = React.useState("");
+  const [availableProjects, setAvailableProjects] = useState<Project[]>([]);
+
+  const editTask = useSelector( (state: RootState) => state.tasks.editTask)
+
   const { data } = useProjects();
 
-  const [availableProjects, setAvailableProjects] = useState<Project[]>([]);
+
+  useEffect(() => {
+    if (data) {
+      setAvailableProjects(data);
+    }
+
+    if(editTask) {
+      setValue(editTask.project.name)
+    }
+  }, [data, editTask]);
+
 
   const onCreate = (value: string) => {
     const newProject = {
@@ -49,7 +65,6 @@ export function SelectProject({onSelect: onSelect2}: Props) {
 
     const cleanedAvailableProjects = availableProjects.filter( item => !item.id.includes('new-'))
 
-
     setAvailableProjects([...cleanedAvailableProjects, newProject]
                             .sort((a, b) => a.name.localeCompare(b.name))
     );
@@ -57,11 +72,6 @@ export function SelectProject({onSelect: onSelect2}: Props) {
     setOpen(false);
   };
 
-  useEffect(() => {
-    if (data) {
-      setAvailableProjects(data);
-    }
-  }, [data]);
 
   return (
     <Popover open={open} onOpenChange={setOpen}>

@@ -4,10 +4,22 @@ import { seedData } from '../data/seed_data'
 import Task from '../models/Task.model'
 import { generateRandomReadableColor } from '../utils/genRandomColor'
 import TaskTag from '../models/TaskTag.model'
+import { Op, Sequelize } from 'sequelize'
 
 export const getTags = async (req: Request, res: Response ) => {
     try {
         const userId = req.user.id
+
+        // clean empty tags
+        await Tag.destroy({
+            where: {
+                userId,
+                id: {
+                    [Op.notIn]: Sequelize.literal('(SELECT "tagId" FROM "task_tag")')
+                }
+            }
+        })
+
         const tags = await Tag.findAll({where: {userId}})
 
         res.status(200).json(tags)
@@ -65,6 +77,40 @@ export const getTagById = async (req: Request, res: Response ) => {
 export const getTagsWithTasks = async (req: Request, res: Response) => {
     try {
         const userId = req.user.id
+        console.log('entrando que ricooooo')
+        
+        // clean empty tags
+        // First, get all tagIds that are currently used in task_tag for this user
+        const usedTagRelations = await TaskTag.findAll({
+            attributes: ['tagId'],
+            where: { userId },
+            raw: true
+        })
+
+        // Extract just the tagIds
+        const usedTagIds = usedTagRelations.map( item => item.tagId)
+        
+        // Find tags that should be deleted (not in usedTagIds)
+        const tagsToDelete = await Tag.findAll({
+            where: {
+                userId,
+                id: usedTagIds.length > 0 
+                    ? { [Op.notIn]: usedTagIds }
+                    : { [Op.ne]: null }
+            }
+        })
+
+        console.log('tags to delete', tagsToDelete)
+
+        // delete selected tags to delete
+        if( tagsToDelete.length > 0 ) {
+            await Tag.destroy({
+                where: {
+                    id: tagsToDelete.map( t => t.id)
+                }
+            })
+        }
+
 
         const tags = await Tag.findAll({
             where: {userId},

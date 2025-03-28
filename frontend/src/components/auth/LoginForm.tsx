@@ -33,6 +33,7 @@ import { revalidatePath } from 'next/cache';
 import { useDispatch } from 'react-redux';
 import { AppDispatch } from '@/store/store';
 import { verifySession } from '@/store/auth/sessionSlice';
+import { revalidateAllData } from '@/actions';
 // ShadCN imports
 
 type InputsForm = {
@@ -58,8 +59,10 @@ export const LoginForm = () => {
         toast.error(res.message)
         return
       }
-      dispatch(verifySession())
-      router.refresh()
+
+      await dispatch(verifySession())
+
+      await revalidateAllData({})
       router.push('/')
     }
 

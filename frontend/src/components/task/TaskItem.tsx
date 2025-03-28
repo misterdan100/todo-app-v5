@@ -9,17 +9,17 @@ import {
   IoStar,
   IoTrashBin
 } from "react-icons/io5";
-import { useState, useEffect, useCallback } from "react";
+import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "@/store/store";
 import styled from "styled-components";
 import { priorityColors } from "@/config/uiConfig";
-import { changeStatus, deleteTask, switchFavorite } from "@/api";
+import { changeStatus, deleteTask, getTask, switchFavorite } from "@/api";
 import { useRouter } from "next/navigation";
-import { addTasksToShow } from "@/store/tasks/tasksSlice";
-import { useTasks } from "@/hooks";
+import { switchIsEditing } from "@/store/tasks/tasksSlice";
 import { mutate } from "swr";
 import { toast } from "sonner";
+import { switchModal } from "@/store/ui/modalSlice";
 
 type Props = {
   task: Task;
@@ -41,6 +41,7 @@ export const TaskItem = ({ task }: Props) => {
 
   // Redux states
   const keyCache = useSelector( (state: RootState) => state.tasks.keyCache)
+  const dispatch = useDispatch<AppDispatch>()
 
   // get priority color or default
   const priorityColor = priorityColors[priority] || "#000000";
@@ -98,13 +99,24 @@ export const TaskItem = ({ task }: Props) => {
     }
   };
 
+  const handleEditTask = async () => {
+    const completedTask = await getTask(task.id)
+
+    console.log(completedTask)
+
+    dispatch(switchModal(true))
+    dispatch(switchIsEditing(completedTask))
+  }
+
   return (
     <motion.div
       className="h-44 px-4 py-3 flex flex-col gap-4 shadow-sm bg-[#f9f9f9] rounded-lg border-2 border-white"
       variants={item}
     >
       <div>
-        <h4 className="text-2xl font-bold text-gray-800">{name}</h4>
+        <h4 className="text-2xl font-bold text-gray-800 cursor-pointer hover:text-primary transition-colors"
+          onClick={handleEditTask}
+        >{name}</h4>
         <p className="line-clamp-3">{description}</p>
       </div>
 

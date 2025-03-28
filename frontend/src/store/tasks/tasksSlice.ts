@@ -1,6 +1,5 @@
-import { Task } from "@/interface";
+import { Task, TaskFromDB } from "@/interface";
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { KeyedMutator } from "swr";
 
 
 // define types for state
@@ -12,6 +11,8 @@ interface Props {
     filteredTasks: Task[]
     filterValue: string
     filtering: boolean
+    isEditing: boolean
+    editTask: TaskFromDB | undefined
 }
 
 const initialState: Props = {
@@ -21,22 +22,10 @@ const initialState: Props = {
     keyCache: '',
     filteredTasks: [],
     filterValue: '',
-    filtering: false
+    filtering: false,
+    isEditing: false,
+    editTask: undefined,
 }
-
-// Define a thunk to handle adding tasks and applying filters
-// export const addTasksAndFilter = createAsyncThunk(
-//     'tasks/addTasksAndFilter', // thunk name
-//     async (tasks: Task[], { dispatch, getState }) => {
-//         dispatch(addTasksToShow(tasks))  // add tasks throught actions
-//         const state = getState() as RootState
-//         const filterValue = state.tasks.filterValue
-
-//         if(filterValue) {
-//             dispatch(selectFilter(filterValue))
-//         }
-//     }
-// )
 
 // define slice 
 const tasksSlice = createSlice({
@@ -77,10 +66,20 @@ const tasksSlice = createSlice({
         },
         switchLoading: (state, action: PayloadAction<boolean>) => {
             state.loadingTasks = action.payload
+        },
+        switchIsEditing: (state, action: PayloadAction<TaskFromDB | undefined>) => {
+            if(action.payload !== undefined) {
+                state.isEditing = true
+                state.editTask = action.payload
+            } else {
+                state.isEditing = false
+                state.editTask = undefined
+            }
         }
+
 
     }
 })
 
-export const { addTasks, addTasksToShow, addKeyCache, cleanTasks, selectFilter, switchLoading,  cleanFilter } = tasksSlice.actions
+export const { addTasks, addTasksToShow, addKeyCache, cleanTasks, selectFilter, switchLoading, cleanFilter, switchIsEditing } = tasksSlice.actions
 export default tasksSlice.reducer

@@ -15,6 +15,7 @@ import { useEffect, useState } from "react";
 import { uiConfig } from "@/config/uiConfig";
 import { DeleteProfileModal, EditProfileModal } from "@/components";
 import Link from "next/link";
+import { revalidateAllData } from "@/actions";
 
 export const ProfileData = ({bgColor}: {bgColor: string}) => {
   const router = useRouter()
@@ -27,9 +28,9 @@ export const ProfileData = ({bgColor}: {bgColor: string}) => {
     const res = await logoutUser()
 
     if(res.success === true) {
-      dispatch(verifySession())
+      await dispatch(verifySession())
+      await revalidateAllData({})
       router.push('/login')
-      return
     }
     toast.error('Error logging out')
   }

@@ -23,9 +23,10 @@ const getTag = cache( async (slug: string) => {
 export async function generateMetadata({params}: Props, parent: ResolvingMetadata): Promise<Metadata> {
 
   const { slug } = await params
+  const nameToShow = slug.replaceAll('-', ' ')
 
   return {
-    title: `${capitalizeText(slug)} Tag`
+    title: `${capitalizeText(nameToShow)} Tag`
   }
 }
 
@@ -33,14 +34,15 @@ export async function generateMetadata({params}: Props, parent: ResolvingMetadat
 
 export default async function TagPage({params}: {params: Promise<{ slug: string }>}) {
   const { slug } = await params
+  const nameToShow = slug.replaceAll('-', ' ')
 
   return (
     <>
     {/* Title */}
-      <HeaderPage title={`${capitalizeText(slug)} Tag`} />
+      <HeaderPage title={`${capitalizeText(nameToShow)} Tag`} />
 
       {/* <ShowTasksSection page='pending'/> */}
-      <TagSection tagName={slug}/>
+      <TagSection tagName={nameToShow}/>
     </>
   )
 }

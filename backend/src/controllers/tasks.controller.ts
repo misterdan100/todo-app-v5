@@ -37,7 +37,9 @@ export const getTaskById = async ( req: Request, res: Response) => {
     try {
         const id = req.params.id
 
-        const task = await Task.findByPk(id)
+        const task = await Task.findByPk(id, {
+            include: [Tag, Project]
+        })
         if(!task) {
             res.status(404).json({error: 'Task not found by id'})
             return
@@ -147,10 +149,19 @@ export const createTask = async (req: Request, res: Response) => {
 export const updateTask = async (req: Request, res: Response) => {
     try {
         const { id } = req.params
+        const userId = req.user.id
+
         const newData = req.body
 
 
         const task = await Task.findByPk(id)
+
+        //Todo: if project is different
+
+
+        //Todo: Check if tags are different
+        //Todo: check if there are unused tags
+
 
         if(!task) {
             res.status(404).json({success: false, message: 'Task not found'})
@@ -189,6 +200,7 @@ export const changeFavoriteTask = async (req: Request, res: Response) => {
 
 export const deleteTask = async (req: Request, res: Response) => {
     try {
+        const userId = req.user.id
         const { id } = req.params
 
         const task = await Task.findByPk(id)
@@ -198,6 +210,14 @@ export const deleteTask = async (req: Request, res: Response) => {
         }
 
         await task.destroy()
+
+        await TaskTag.destroy({
+            where: {
+                userId,
+                taskId: task.id
+            }
+        })
+
         res.status(200).json({success: true, message: 'Task deleted'})
     } catch (error) {
         console.log('[ERROR_DELETETASK]', error.message)

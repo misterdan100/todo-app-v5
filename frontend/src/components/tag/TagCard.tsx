@@ -34,12 +34,14 @@ const StyledTitle = styled.div`
 export function TagCard({ tag, className, ...props }: TagCardProps) {
   const { id, name, color, tasks } = tag;
 
+  const nameToLinks = name.replaceAll(' ', '-')
+
   return (
     <motion.div variants={item}>
       <Card className={cn(" h-fit", className)} {...props}>
         <CardHeader className="pb-0">
           <CardTitle>
-            <Link href={`/tags/${name}`}>
+            <Link href={`/tags/${nameToLinks}`}>
               <StyledTitle>{name.toLocaleUpperCase()}</StyledTitle>
             </Link>
           </CardTitle>

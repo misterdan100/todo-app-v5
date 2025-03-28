@@ -2,10 +2,22 @@ import { Request, Response } from 'express';
 import Project from '../models/Project.model';
 import Task from '../models/Task.model';
 import { seedData } from '../data/seed_data';
+import { Op, Sequelize } from 'sequelize';
 
 export const getProjects = async (req: Request, res: Response) => {
     try {
         const userId = req.user.id
+
+        // Clean empty projects
+        await Project.destroy({
+            where: {
+                userId,
+                id: {
+                    // select all id projects who are related with any task
+                    [Op.notIn]: Sequelize.literal(`(SELECT DISTINCT "projectId" FROM "tasks" WHERE "projectId" IS NOT NULL AND "tasks"."userId" = '${userId}')`)
+                }
+            }
+        })
 
         const projects = await Project.findAll({
             where: {userId},

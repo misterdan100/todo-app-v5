@@ -1,6 +1,23 @@
 "use client";
 
+import { useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { useRouter } from "next/navigation";
+import { useForm } from "react-hook-form";
+import { toast } from "sonner";
+import { mutate } from "swr";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { z } from "zod";
+import clsx from "clsx";
 
+import { AppDispatch, RootState } from "@/store/store";
+import { switchModal } from "@/store/ui/modalSlice";
+import { TagsSection } from "./TagsSection";
+import { SelectProject } from "./SelectProject";
+import { createTask } from "@/api";
+
+
+// Shadcn components...........................
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -33,26 +50,18 @@ import {
 import { format } from "date-fns";
 import { CalendarIcon } from "lucide-react";
 import { Input } from "@/components/ui/input";
-import { useForm } from "react-hook-form";
-import { z } from "zod";
-import { zodResolver } from "@hookform/resolvers/zod";
 import { cn } from "@/lib/utils";
 import { Calendar } from "@/components/ui/calendar";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Textarea } from "../../ui/textarea";
 import { Toggle } from "@/components/ui/toggle";
 import { IoFlag, IoReload, IoStarSharp } from "react-icons/io5";
-import clsx from "clsx";
-import { useEffect, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { AppDispatch, RootState } from "@/store/store";
-import { switchModal } from "@/store/ui/modalSlice";
-import { useRouter } from "next/navigation";
-import { TagsSection } from "./TagsSection";
-import { toast } from "sonner";
-import { SelectProject } from "./SelectProject";
-import { createTask } from "@/api";
-import { mutate } from "swr";
+import { Status, Task } from "@/interface";
+import { switchIsEditing } from "@/store/tasks/tasksSlice";
+import { delay } from "@/utils";
+
+
+
 
 const formSchema = z.object({
   name: z
@@ -68,47 +77,56 @@ const formSchema = z.object({
   tags: z.array(z.object({id: z.string(), name: z.string()})),
 });
 
-// function componente ////////////////////////////////////////////////////////////
+const initialValues = {
+  name: "",
+  favorite: false,
+  description: '',
+  priority: '',
+  dueDate: undefined,
+  project: undefined,
+  status: "pending" as Status,
+  tags: [],
+}
+
+// function componente .......................................
 export function CreateTaskModal() {
   const router = useRouter();
 
   // Redux Toolkit states
+  const isEditing = useSelector((state: RootState) => state.tasks.isEditing);
+  const editTask = useSelector((state: RootState) => state.tasks.editTask);
+
   const isOpen = useSelector((state: RootState) => state.modal.isOpen);
   const keyCache = useSelector((state: RootState) => state.tasks.keyCache);
   const dispatch = useDispatch<AppDispatch>();
 
-  const [projects, setProjects] = useState<{ id: string; name: string }[]>([]);
   const [loadingSending, setLoadingSending] = useState(false)
 
   // Reack-hook-form initial state
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
-    defaultValues: {
-      name: "",
-      favorite: false,
-      description: undefined,
-      priority: undefined,
-      dueDate: undefined,
-      project: undefined,
-      status: "pending",
-      tags: [],
-    },
+    defaultValues: initialValues,
   });
 
   const isFavorite = form.watch("favorite");
 
   useEffect(() => {
-    form.reset();
-  }, []);
+    if(isEditing) {
+      form.reset({
+        ...editTask,
+        dueDate: new Date(editTask?.dueDate ?? '')
+      })
+      return
+    }
+  }, [isEditing]);
 
-
-  const onSubmit = async (formData: z.infer<typeof formSchema>) => {
+  const handleCreateTask = async (formData: z.infer<typeof formSchema>) => {
     setLoadingSending(true)
 
     try {
       const res = await createTask(formData)
       if(res.success) {
-        form.reset();
+        form.reset(initialValues);
         mutate(keyCache)
         mutate('/tasks')
         mutate('/projects')
@@ -124,16 +142,47 @@ export function CreateTaskModal() {
     } finally {
       setLoadingSending(false)
     }
+  }
+
+  const handleEditTask = async (formData: z.infer<typeof formSchema>) => {
+    setLoadingSending(true)
+    try {
+      console.log('editing task', editTask?.id)
+      
+    } catch (error) {
+      toast.error("Error editing task:");
+      console.error("Error editing task:", error);
+    } finally {
+      setLoadingSending(false)
+    }
+  }
+
+  const onSubmit = async (formData: z.infer<typeof formSchema>) => {
+    if(isEditing) {
+      return handleEditTask(formData)
+    } else {
+      return handleCreateTask(formData)
+    }
   };
+
+  const handleCloseOpenModal = async (open: boolean) => {
+    if(open === false) {
+      form.reset(initialValues);
+
+      //! Force React Hook Form to recognize the change in dueDate
+      setTimeout(() => {
+        form.setValue("dueDate", undefined);
+      }, 0);
+
+
+      dispatch(switchIsEditing())
+    }
+    dispatch(switchModal(open));
+  }
 
   return (
     <Dialog
-      onOpenChange={(open) => {
-        if (open === false) {
-          form.reset();
-        }
-        dispatch(switchModal(open));
-      }}
+      onOpenChange={(open) => handleCloseOpenModal(open)}
       open={isOpen}
     >
       <DialogTrigger asChild>
@@ -363,6 +412,7 @@ export function CreateTaskModal() {
             <Button 
               className={cn(
                 'bg-green-600 hover:bg-green-500 w-full',
+                isEditing === true && 'bg-amber-600 hover:bg-amber-500 w-full',
                 form.formState.errors.name && 'disable opacity-50 hover:bg-green-600 cursor-default'
 
               )} 
@@ -372,7 +422,7 @@ export function CreateTaskModal() {
               }}
             >
               { loadingSending && <IoReload className="animate-spin"/>}
-              Create Task
+              {isEditing ? 'Edit Task' : 'Create Task'}
             </Button>
 
           </form>

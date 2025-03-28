@@ -22,6 +22,7 @@ import { Label } from "@/components/ui/label";
 import { useDispatch } from 'react-redux';
 import { AppDispatch } from '@/store/store';
 import { verifySession } from '@/store/auth/sessionSlice';
+import { revalidateAllData } from '@/actions';
 
 
 type InputsForm = {
@@ -60,9 +61,10 @@ export const RegisterForm = () => {
         toast.error(res.message)
         return
       }
-      dispatch(verifySession())
       toast.success('User successfully registered')
-      router.push('/')
+      await dispatch(verifySession())
+      await revalidateAllData({})
+      router.replace('/start')
     }
 
   return (

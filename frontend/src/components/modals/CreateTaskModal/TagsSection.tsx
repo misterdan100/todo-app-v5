@@ -4,6 +4,8 @@ import { useEffect, useState } from "react";
 import { IoCloseCircleOutline } from "react-icons/io5";
 import { AddTag } from "./AddTag";
 import { useTags } from "@/hooks";
+import { useSelector } from "react-redux";
+import { RootState } from "@/store/store";
 
 type Tag = {
   id: string;
@@ -19,13 +21,20 @@ export const TagsSection = ({ onSelect}: Props) => {
   const [selectedTags, setSelectedTags] = useState<Tag[]>([]);
   const [availableTags, setAvailableTags] = useState<Tag[]>(tagsUser ? tagsUser.map((item: Tag) => ({id: item.id, name: item.name})) : []);
 
+  const editTask = useSelector((state: RootState) => state.tasks.editTask)
+
   useEffect(() => {
     setAvailableTags(tagsUser 
       ? tagsUser
         .map((item: Tag) => ({id: item.id, name: item.name})) 
         .sort((a: Tag,b: Tag) => a.name.localeCompare(b.name))
       : [])
-  }, [tagsUser])
+
+
+    if(editTask) {
+      setSelectedTags(editTask.tags ?? [])
+    }
+  }, [tagsUser,editTask])
 
 
   // To filter available Tags

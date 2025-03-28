@@ -14,6 +14,7 @@ import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { verifySession } from "@/store/auth/sessionSlice";
 import Link from "next/link";
+import { revalidateAllData } from "@/actions";
 
 export const SidebarRight = () => {
   const router = useRouter()
@@ -38,7 +39,8 @@ export const SidebarRight = () => {
     const res = await logoutUser()
 
     if(res.success === true) {
-      dispatch(verifySession())
+      await dispatch(verifySession())
+      await revalidateAllData({})
       router.push('/login')
       return
     }
@@ -52,9 +54,8 @@ if( isSidebarRightOpen && session ) return (
 
         {/* Profile card */}
         <Link
-        href='/profile'
+          href='/profile'
           className="px-2 py-4 flex items-center gap-3 hover:bg-[#ededed] transition duration-300 ease-in-out cursor-pointer border-2 border-transparent hover:border-2 hover:border-white rounded-lg"
-          onClick={() => console.log("click profile")}
         >
           <Image
             src={"/logo.svg"}

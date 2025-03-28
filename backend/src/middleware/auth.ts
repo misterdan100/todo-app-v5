@@ -13,7 +13,7 @@ declare global {
 
 
 const authenticate = async (req: Request, res: Response, next: NextFunction) => {
-    console.log(`Request in Middleware: ${req.method} - ${req.baseUrl}`)
+    console.log(`Req Middleware: ${req.method} - ${req.baseUrl}`)
     try {
         if(!req.cookies.token) {
             res.status(401).json({success: false, message: 'Unauthorized user, not token'})

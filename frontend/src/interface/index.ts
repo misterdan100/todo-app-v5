@@ -8,7 +8,7 @@ export type Task = {
     id: string,
     name: string,
     description?: string,
-    dueDate?: string
+    dueDate?: Date
     favorite: boolean,
     priority:  Priority
     status: Status
@@ -16,6 +16,7 @@ export type Task = {
     createdAt: string,
     updatedAt: string,
     tags?: Tag[]
+    userId: string
 }
 
 export type Tag = {
@@ -32,6 +33,10 @@ export type Project = {
 }
 
 export type TaskFormData = Pick<Task, 'name' | 'description' | 'dueDate' | 'favorite' | 'priority' | 'status' | 'projectId'>
+
+export type TaskFromDB = Task & {
+    project: Project
+}
 
 export type Priority = 'low' | 'medium' | 'high'
 export type Status = 'pending' | 'overdue' | 'completed'
