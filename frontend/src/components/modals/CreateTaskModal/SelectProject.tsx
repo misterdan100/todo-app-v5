@@ -108,6 +108,8 @@ export function SelectProject({onSelect: onSelect2}: Props) {
                     key={project.id}
                     value={project.name}
                     onSelect={(currentValue) => {
+
+                      // compare before to update states to avoid banding
                       const isDeselecting = project.name === value
 
                       setValue(isDeselecting ? '' : currentValue)

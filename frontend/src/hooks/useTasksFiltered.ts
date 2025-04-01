@@ -7,9 +7,10 @@ import useSWR from 'swr'
 
 type Props = {
     filter?: Status
+    immediate?: boolean
 }
 
-export const useTasksFiltered = ({ filter }: Props) => {
+export const useTasksFiltered = ({ filter, immediate = true }: Props) => {
     const dispatch = useDispatch<AppDispatch>()
 
     const url = `/tasks?filter=${filter}`
@@ -20,11 +21,6 @@ export const useTasksFiltered = ({ filter }: Props) => {
     const {data, error, isLoading, mutate} = useSWR(key, () => fetcher(url), {
         dedupingInterval: 2000,
     })
-
-    if(data) {
-        dispatch(addTasksToShow(data))
-        dispatch(addKeyCache(key))
-    }
 
     return { tasks: data, error, isLoading, mutate}
 }

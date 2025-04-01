@@ -17,6 +17,14 @@ import { cn } from "@/lib/utils";
 import styled from "styled-components";
 import Link from "next/link";
 import { item } from "@/utils";
+import { useDispatch } from "react-redux";
+import { AppDispatch } from "@/store/store";
+import { getTask } from "@/api";
+import { switchModal } from "@/store/ui/modalSlice";
+import { addKeyCache, switchIsEditing } from "@/store/tasks/tasksSlice";
+import { mutate } from "swr";
+import { useRouter } from "next/navigation";
+
 
 // Types
 interface TagCardProps extends React.ComponentProps<typeof Card> {
@@ -32,9 +40,19 @@ const StyledTitle = styled.div`
 `;
 
 export function TagCard({ tag, className, ...props }: TagCardProps) {
+  const dispatch = useDispatch<AppDispatch>()
   const { id, name, color, tasks } = tag;
 
   const nameToLinks = name.replaceAll(' ', '-')
+
+  const handleEditTask = async (taskId: string) => {
+    const completedTask = await getTask(taskId)
+
+    dispatch(switchModal(true))
+    dispatch(switchIsEditing(completedTask))
+    dispatch(addKeyCache('/tags/tasks'))
+
+  }
 
   return (
     <motion.div variants={item}>
@@ -68,7 +86,9 @@ export function TagCard({ tag, className, ...props }: TagCardProps) {
                 }}
               />
               <div className="space-y-1">
-                <p className="text-gray-68 text-sm font-medium leading-none hover:text-black">
+                <p className="text-gray-68 text-sm font-medium leading-none hover:text-black"
+                  onClick={() => handleEditTask(task.id)}
+                >
                   {task.name}
                 </p>
                 <p className="text-sm text-muted-foreground italic">

@@ -102,8 +102,6 @@ export const TaskItem = ({ task }: Props) => {
   const handleEditTask = async () => {
     const completedTask = await getTask(task.id)
 
-    console.log(completedTask)
-
     dispatch(switchModal(true))
     dispatch(switchIsEditing(completedTask))
   }

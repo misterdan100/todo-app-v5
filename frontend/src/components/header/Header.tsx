@@ -15,7 +15,6 @@ import { verifySession } from "@/store/auth/sessionSlice";
 import { mutate } from "swr";
 import { useTasks } from "@/hooks";
 
-
 const { mainColor } = uiConfig;
 
 const StyledLink = styled(Link)<{ $sidebarOpen?: boolean }>`
@@ -41,14 +40,14 @@ export const Header = () => {
   );
   const [totalTasks, setTotalTasks] = useState(0);
 
-
-  const {} = useTasks({})
-
-
+  // const {} = useTasks({})
 
   useEffect(() => {
     dispatch(verifySession())
     mutate('/tasks')
+  }, [dispatch]);
+  
+  useEffect(() => {
     setTotalTasks(allTasks.length);
   }, [allTasks]);
 

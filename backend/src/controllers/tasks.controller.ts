@@ -5,6 +5,8 @@ import { seedData } from '../data/seed_data'
 import Tag from '../models/Tag.model'
 import TaskTag from '../models/TaskTag.model'
 import { createTag } from './utils/createTag'
+import { Op } from 'sequelize'
+import { generateRandomReadableColor } from '../utils/genRandomColor'
 
 export const getTasks = async (req: Request, res: Response) => {
     try {
@@ -44,7 +46,7 @@ export const getTaskById = async ( req: Request, res: Response) => {
             res.status(404).json({error: 'Task not found by id'})
             return
         }
-        console.log(task)
+
         res.status(200).json(task)
 
     } catch (error) {
@@ -152,13 +154,47 @@ export const updateTask = async (req: Request, res: Response) => {
         const userId = req.user.id
 
         const newData = req.body
-        console.log(newData)
 
         const task = await Task.findByPk(id)
 
-        //Todo: if project is different
+        if(!task) {
+            res.status(404).json({success: false, message: 'Task not found'})
+            return
+        }
+
+        // Title => .............
+        if( task.name.trim() !== newData.name.trim()) {
+            task.name = newData.name
+        }
+        
+        // Description => 
+        if( task.description.trim() !== newData.description.trim()) {
+            task.description = newData.description
+        }
+        
+        // status => 
+        if( task.status !== newData.status) {
+            task.status = newData.status
+        }
+
+        // favorite => 
+        if( task.favorite !== newData.favorite) {
+            task.favorite = newData.favorite
+        }
+        
+        // Priority => 
+        if( task.priority !== newData.priority) {
+            task.priority = newData.priority
+        }
+        
+        // Priority => 
+        if( task.dueDate !== newData.dueDate) {
+            task.dueDate = newData.dueDate
+        }
+
+        //Project =>  if project is different
         if(newData.project && newData.project.id !== task.projectId) {
-            //Todo: if project is new
+            // if project is new
             if(newData.project.id.includes('new-')) {
                 const newProject = await Project.create({name: newData.project.name, userId})
                 task.projectId = newProject.id
@@ -169,30 +205,77 @@ export const updateTask = async (req: Request, res: Response) => {
             }
         }
 
-        //Todo: if newProject is empty
+        //Project => if newProject is empty
         if(!newData.project) {
             task.projectId = null
         }
 
+        
+        // Tags => ......................................
+        // list tags from req and old tags from task
+        const oldTagsPromise = await TaskTag.findAll({where: {
+            taskId: task.id,
+            userId: userId
+        }})
+        const oldTags = oldTagsPromise.map( item => ({taskId: item.dataValues.taskId, tagId: item.dataValues.tagId, userId}))
+
+        // list old tags from task in db
+        const oldTagsIds: string[] = oldTags.map( item => item.tagId) || []
+
+        let reqTags: {id: string, name: string}[] = newData.tags || []
+
+        // 1. check if there are new- tags and create them
+        const newTagsToCreate = reqTags.filter( item => item.id.includes('new-'))
+                                    .map( item => ({
+                                        name: item.name,
+                                        color: generateRandomReadableColor(),
+                                        userId
+                                    }))
+
+        if(newTagsToCreate.length > 0) {
+            const resNewTags = await Tag.bulkCreate(newTagsToCreate)
+            reqTags = reqTags.map( reqTag => {
+                if( reqTag.id.includes('new-')) {
+
+                    const newTag = resNewTags.find( i => i.name === reqTag.name)
+                    return {id: newTag.id ,name: newTag.name}
+                }
+                return reqTag
+            })
+        }
+
+        // 3. check if there are unused task and delete relation
+        const reqTagsId = reqTags.map(tag => tag.id)
+        const unusedTags = oldTagsIds.filter( oldTagId => !reqTagsId.includes(oldTagId))
+                                    
+        if(unusedTags.length > 0) {
+            await TaskTag.destroy({where: {
+                taskId: task.id,
+                userId,
+                tagId: {
+                    [Op.in]: unusedTags
+                }
+            }})
+        }
+
+        // 4. check if there are new added tags and create relation
+        const addedTags = reqTags.filter( tag => !oldTagsIds.includes(tag.id))
+                                    .map( tag => ({
+                                        taskId: task.id,
+                                        userId,
+                                        tagId: tag.id
+                                    }))
+
+        if(addedTags.length > 0) {
+            await TaskTag.bulkCreate(addedTags)
+        }
+        
+    
         await task.save()
-
-
-
-        //Todo: Check if tags are different
-        //Todo: check if there are unused tags
-
-
-        // if(!task) {
-        //     res.status(404).json({success: false, message: 'Task not found'})
-        //     return
-        // }
-
-        // await task.update(newData)
-        // const response = await task.save()
         res.status(200).json({success: true, message: 'Task updated'})
 
     } catch (error) {
-        console.log('[ERROR_UPDATETASK]', error.message)
+        console.log('[ERROR_UPDATETASK]', error)
         res.status(400).json({success: false, message: 'Error updating task'})
     }
 }

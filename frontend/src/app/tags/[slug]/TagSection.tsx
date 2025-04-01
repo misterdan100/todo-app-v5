@@ -1,6 +1,5 @@
 "use client";
 
-import styled from "styled-components";
 import { LoadingSpinner } from "@/components/spinner/LoadingSpinner";
 import { ShowTasksSection } from "@/components/task/ShowTasksSection";
 import { useTag, useTaskByTag } from "@/hooks";
@@ -17,17 +16,6 @@ export const TagSection = ({ tagName }: Props) => {
   const [tagColor, setTagColor] = useState('')
   const { tag } = useTag({tagName})
   const { data, error, isLoading, mutate } = useTaskByTag(tagName);
-
-  const SlyledDivBanner = styled.div`
-    width: 100%;
-    padding: 0.5rem 1rem;
-    margin-top: 1rem;
-    /* background-color: ${tagColor}; */
-    font-weight: 700;
-    color: white;
-    border-radius: 1rem;
-    border: 2px solid white;
-  `;
 
   useEffect(() => {
     if(tag) {
@@ -47,14 +35,14 @@ export const TagSection = ({ tagName }: Props) => {
 
       return (
         <div>
-        <SlyledDivBanner 
-          className=""
+        <div 
+          className="w-full py-2 px-4 mt-4 font-bold text-white rounded-2xl border-2 border-white"
           style={{
             backgroundColor: tagColor
           }}
         >
           {data.tasks.length} {data.tasks.length === 1 ? "Task" : "Tasks"}
-        </SlyledDivBanner>
+        </div>
 
         <ShowTasksSection tasks={data.tasks} />
       </div>

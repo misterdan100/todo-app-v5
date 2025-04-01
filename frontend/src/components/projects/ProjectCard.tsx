@@ -16,6 +16,11 @@ import { cn } from "@/lib/utils";
 import styled from "styled-components";
 import Link from "next/link";
 import { generateRandomReadableColor, item } from "@/utils";
+import { getTask } from "@/api";
+import { useDispatch } from "react-redux";
+import { AppDispatch } from "@/store/store";
+import { switchModal } from "@/store/ui/modalSlice";
+import { addKeyCache, switchIsEditing } from "@/store/tasks/tasksSlice";
 
 // Types
 interface Props extends React.ComponentProps<typeof Card> {
@@ -31,7 +36,17 @@ const StyledTitle = styled.div`
 `;
 
 export function ProjectCard({ project, className, ...props }: Props) {
+  const dispatch = useDispatch<AppDispatch>()
+
   const { id, name, tasks } = project;
+
+    const handleEditTask = async (taskId: string) => {
+      const completedTask = await getTask(taskId)
+  
+      dispatch(switchModal(true))
+      dispatch(switchIsEditing(completedTask))
+      dispatch(addKeyCache('/projects/tasks'))
+    }
 
   return (
     <motion.div variants={item}>
@@ -65,7 +80,10 @@ export function ProjectCard({ project, className, ...props }: Props) {
                 }}
               />
               <div className="space-y-1">
-                <p className="text-gray-68 text-sm font-medium leading-none hover:text-black">
+                <p className="text-gray-68 text-sm font-medium leading-none hover:text-black"
+                  onClick={() => handleEditTask(task.id)}
+
+                >
                   {task.name}
                 </p>
                 <p className="text-sm text-muted-foreground italic">

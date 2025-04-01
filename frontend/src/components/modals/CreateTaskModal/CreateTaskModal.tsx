@@ -110,12 +110,6 @@ export function CreateTaskModal() {
 
   const isFavorite = form.watch("favorite");
 
-  const watchProject = form.watch('project')
-
-  useEffect(() => {
-    console.log(watchProject ,form.getValues('project'))
-  }, [watchProject])
-
   useEffect(() => {
     if(isEditing) {
       form.reset({
@@ -159,7 +153,7 @@ export function CreateTaskModal() {
         id: editTask?.id!,
         priority: formEditData.priority as Priority
        }
-      //  console.log('dataToSend', dataToSend)
+
       const res = await updateTask(dataToSend)
 
       if(!res) {
@@ -174,6 +168,7 @@ export function CreateTaskModal() {
       mutate(`/tasks/${editTask?.id}`)
       mutate('/tasks')
       mutate('/projects')
+      mutate(keyCache)
       dispatch(switchModal(false))
       router.refresh()
 
