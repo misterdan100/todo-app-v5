@@ -32,7 +32,11 @@ export type Project = {
     tasks?: Task[]
 }
 
-export type TaskFormData = Pick<Task, 'name' | 'description' | 'dueDate' | 'favorite' | 'priority' | 'status' | 'projectId'>
+export type TaskFormData = {project?: Project} & Pick<Task, 'name' | 'description' | 'dueDate' | 'favorite' | 'priority' | 'status' | 'projectId'>
+
+export type TaskEditFormData = TaskFormData & {
+    id: string
+}
 
 export type TaskFromDB = Task & {
     project: Project

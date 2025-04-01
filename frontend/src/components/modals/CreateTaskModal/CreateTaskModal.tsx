@@ -14,7 +14,7 @@ import { AppDispatch, RootState } from "@/store/store";
 import { switchModal } from "@/store/ui/modalSlice";
 import { TagsSection } from "./TagsSection";
 import { SelectProject } from "./SelectProject";
-import { createTask } from "@/api";
+import { createTask, updateTask } from "@/api";
 
 
 // Shadcn components...........................
@@ -56,7 +56,7 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Textarea } from "../../ui/textarea";
 import { Toggle } from "@/components/ui/toggle";
 import { IoFlag, IoReload, IoStarSharp } from "react-icons/io5";
-import { Status, Task } from "@/interface";
+import { Priority, Status, Task } from "@/interface";
 import { switchIsEditing } from "@/store/tasks/tasksSlice";
 import { delay } from "@/utils";
 
@@ -110,11 +110,18 @@ export function CreateTaskModal() {
 
   const isFavorite = form.watch("favorite");
 
+  const watchProject = form.watch('project')
+
+  useEffect(() => {
+    console.log(watchProject ,form.getValues('project'))
+  }, [watchProject])
+
   useEffect(() => {
     if(isEditing) {
       form.reset({
         ...editTask,
-        dueDate: new Date(editTask?.dueDate ?? '')
+        dueDate: new Date(editTask?.dueDate ?? ''),
+        project: editTask?.project ? {id: editTask.project.id, name: editTask.project.name} : undefined
       })
       return
     }
@@ -144,10 +151,32 @@ export function CreateTaskModal() {
     }
   }
 
-  const handleEditTask = async (formData: z.infer<typeof formSchema>) => {
+  const handleEditTask = async (formEditData: z.infer<typeof formSchema>) => {
     setLoadingSending(true)
     try {
-      console.log('editing task', editTask?.id)
+
+      const dataToSend = {...formEditData,
+        id: editTask?.id!,
+        priority: formEditData.priority as Priority
+       }
+      //  console.log('dataToSend', dataToSend)
+      const res = await updateTask(dataToSend)
+
+      if(!res) {
+        toast.error('Error updating task')
+        return
+      }
+
+      toast.success('Task updated.', {
+        description: editTask?.name
+      })
+      form.reset(initialValues);
+      mutate(`/tasks/${editTask?.id}`)
+      mutate('/tasks')
+      mutate('/projects')
+      dispatch(switchModal(false))
+      router.refresh()
+
       
     } catch (error) {
       toast.error("Error editing task:");

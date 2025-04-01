@@ -44,7 +44,7 @@ export const getTaskById = async ( req: Request, res: Response) => {
             res.status(404).json({error: 'Task not found by id'})
             return
         }
-
+        console.log(task)
         res.status(200).json(task)
 
     } catch (error) {
@@ -152,24 +152,43 @@ export const updateTask = async (req: Request, res: Response) => {
         const userId = req.user.id
 
         const newData = req.body
-
+        console.log(newData)
 
         const task = await Task.findByPk(id)
 
         //Todo: if project is different
+        if(newData.project && newData.project.id !== task.projectId) {
+            //Todo: if project is new
+            if(newData.project.id.includes('new-')) {
+                const newProject = await Project.create({name: newData.project.name, userId})
+                task.projectId = newProject.id
+            } else {
+                // search existing different project
+                const existingDifferentProject = await Project.findByPk(newData.project.id)
+                task.projectId = existingDifferentProject.id
+            }
+        }
+
+        //Todo: if newProject is empty
+        if(!newData.project) {
+            task.projectId = null
+        }
+
+        await task.save()
+
 
 
         //Todo: Check if tags are different
         //Todo: check if there are unused tags
 
 
-        if(!task) {
-            res.status(404).json({success: false, message: 'Task not found'})
-            return
-        }
+        // if(!task) {
+        //     res.status(404).json({success: false, message: 'Task not found'})
+        //     return
+        // }
 
-        await task.update(newData)
-        const response = await task.save()
+        // await task.update(newData)
+        // const response = await task.save()
         res.status(200).json({success: true, message: 'Task updated'})
 
     } catch (error) {

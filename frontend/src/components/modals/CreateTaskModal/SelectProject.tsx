@@ -51,7 +51,7 @@ export function SelectProject({onSelect: onSelect2}: Props) {
     }
 
     if(editTask) {
-      setValue(editTask.project.name)
+      setValue(editTask.project ? editTask.project.name : '')
     }
   }, [data, editTask]);
 
@@ -108,9 +108,12 @@ export function SelectProject({onSelect: onSelect2}: Props) {
                     key={project.id}
                     value={project.name}
                     onSelect={(currentValue) => {
-                      setValue(currentValue === value ? "" : currentValue);
-                      setOpen(false);
-                      onSelect2(project)
+                      const isDeselecting = project.name === value
+
+                      setValue(isDeselecting ? '' : currentValue)
+                      setOpen(false)
+
+                      onSelect2(isDeselecting ? undefined : project)
                     }}
                   >
                     {capitalizeText(project.name)}

@@ -25,10 +25,6 @@ export function useTasks({showTasks = false}: {showTasks?: boolean}) {
       if (retryCount >= 2) return;
     }
   });
-
-  if(error) {
-    console.log(error.response.data.message)
-  }
   
   if(data) {
     dispatch(addTasks(data));
