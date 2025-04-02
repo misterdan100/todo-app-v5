@@ -23,3 +23,5 @@ export * from './projects/ProjectCard'
 
 export * from './auth/LoginForm'
 export * from './auth/RegisterForm'
+
+export * from './ThemeManager'

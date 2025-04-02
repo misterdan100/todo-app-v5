@@ -25,6 +25,8 @@ export const Sidebar = () => {
   const isSidebarMainOpen = useSelector(
     (state: RootState) => state.sidebar.isSidebarMainOpen
   );
+  const theme = useSelector((state: RootState) => state.theme.theme);
+  
   const [showItemTexts, setShowItemTexts] = useState(true);
   const dispatch = useDispatch<AppDispatch>();
 
@@ -51,7 +53,8 @@ export const Sidebar = () => {
   const pathname = usePathname();
 
   const getSelectedColor = (link: string) => {
-    return pathname === link ? mainColor : "#71717a";
+    const color = theme === 'light' ? mainColor : '#8b5cf6'
+    return pathname === link ? color : "#71717a";
   };
 
   const navItems = [
@@ -95,10 +98,10 @@ export const Sidebar = () => {
     >
       <Link
         href="/"
-        className="flex items-center justify-center h-[5rem] w-full mt-4"
+        className="flex items-center justify-center h-[5rem] w-full mt-4 "
         onClick={() => setShowItemTexts((prev) => !prev)}
       >
-        <Image src="/logotipo.svg" width={100} height={100} alt="logo" />
+        <Image src={theme === 'light' ? "/logotipo.svg" : '/logotipo_dark.svg'} width={100} height={100} alt="logo" />
       </Link>
 
       <div className="flex flex-col items-center  px-2">
@@ -106,8 +109,8 @@ export const Sidebar = () => {
           {navItems.map((item, i) => (
             <li
               key={i}
-              className={clsx("relative group py-2 px-4 hover:bg-gray-200 transition-colors rounded-md",
-                {'text-primary bg-gray-100': pathname === item.link}
+              className={clsx("relative group py-2 px-4 hover:bg-gray-200 dark:hover:bg-slate-800 transition-colors rounded-md",
+                {'text-primary bg-gray-100 dark:text-gray-300 dark:bg-slate-700': pathname === item.link}
               )}
             >
               <Link
@@ -121,6 +124,7 @@ export const Sidebar = () => {
                   </p>
                 )}
               </Link>
+
               {!showItemTexts && (
                 <span
                   className="u-triangle absolute top-[50%] translate-y-[-50%] left-8 text-xs pointer-events-none text-white px-2 py-1 rounded-md shadow-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300"
@@ -138,7 +142,7 @@ export const Sidebar = () => {
 
       {data && showItemTexts && (
         <div className="flex flex-col items-center justify-start flex-1 px-2 h-full overflow-y-hidden">
-          <p className="text-base text-center antialiased font-semibold uppercase pt-2 text-gray-500 border-t-2 border-gray-200  mt-6">
+          <p className="text-base text-center antialiased font-semibold uppercase pt-2 text-gray-500 dark:text-gray-400 border-t-2 border-gray-200 dark:border-slate-600  mt-6">
             Projects
           </p>
           <div className=" mt-2 pr-2 h-full overflow-y-auto pb-[1.5rem]">
@@ -152,7 +156,7 @@ export const Sidebar = () => {
                 <motion.li
                   variants={item}
                   key={i}
-                  className="relative group py-2 px-4 hover:bg-gray-200 transition-colors rounded-md "
+                  className="relative group py-2 px-4 text-gray-600 hover:bg-gray-200 dark:hover:bg-slate-700 transition-colors rounded-md dark:text-gray-400"
                 >
                   <Link
                     href={`/projects/${item1.name.replaceAll(' ', '-')}`}
@@ -166,7 +170,7 @@ export const Sidebar = () => {
                       }}
                     ></div>
 
-                    <p className="text-base antialiased font-normal text-gray-600">
+                    <p className="text-base antialiased font-normal ">
                       {capitalizeText(item1.name).slice(0, 10)}
                     </p>
                   </Link>

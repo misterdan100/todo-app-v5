@@ -56,7 +56,7 @@ export function TagCard({ tag, className, ...props }: TagCardProps) {
 
   return (
     <motion.div variants={item}>
-      <Card className={cn(" h-fit", className)} {...props}>
+      <Card className={cn("dark:bg-slate-900 dark:border-slate-700 dark:border-2  h-fit", className)} {...props}>
         <CardHeader className="pb-0">
           <CardTitle>
             <Link href={`/tags/${nameToLinks}`}>
@@ -64,7 +64,7 @@ export function TagCard({ tag, className, ...props }: TagCardProps) {
             </Link>
           </CardTitle>
           <CardDescription
-            className="border-b-2 pb-"
+            className="border-b-2"
             style={{
               borderColor: color,
             }}
@@ -76,8 +76,7 @@ export function TagCard({ tag, className, ...props }: TagCardProps) {
           {tasks?.map((task, index) => (
             <div
               key={index}
-              // className="mb-4 grid grid-cols-[25px_1fr] items-start pb-4 last:mb-0 last:pb-0 hover:cursor-pointer"
-              className="p-2 w-full hover:bg-gray-100 rounded-md grid grid-cols-[25px_1fr] items-start pb-4 last:mb-0  hover:cursor-pointer"
+              className="p-2 w-full hover:bg-gray-100 dark:hover:bg-gray-700  rounded-md grid grid-cols-[25px_1fr] items-start pb-4 last:mb-0  hover:cursor-pointer transition-colors"
             >
               <span
                 className="flex h-2 w-2 translate-y-1 rounded-full"
@@ -86,7 +85,7 @@ export function TagCard({ tag, className, ...props }: TagCardProps) {
                 }}
               />
               <div className="space-y-1">
-                <p className="text-gray-68 text-sm font-medium leading-none hover:text-black"
+                <p className="text-gray-68 text-sm font-medium leading-none hover:text-black dark:hover:text-gray-300"
                   onClick={() => handleEditTask(task.id)}
                 >
                   {task.name}

@@ -37,21 +37,23 @@ export const ProfileData = ({bgColor}: {bgColor: string}) => {
 
   return (
     <>
-      <div className="h-56 w-96 absolute flex justify-center items-center">
+      <div className="h-56 w-96 absolute flex justify-center items-center ">
+
+        {/* Avatar circle */}
         <div
-          className="object-cover h-20 w-20 rounded-full bg-white flex justify-center items-center"
+          className="object-cover h-20 w-20 rounded-full bg-white text-gray-700 dark:bg-slate-800 dark:text-gray-300 flex justify-center items-center"
           style={{
             border: `4px solid ${uiConfig.mainColor}`
           }}
         >
           <p
-            className="text-4xl font-bold text-gray-700"
+            className="text-4xl font-bold "
           >{letterAvatar}</p>
         </div>
       </div>
 
       <div
-        className=" h-56 mx-4 md:w-96 rounded-3xl shadow-md sm:w-80 sm:mx-0"
+        className=" h-56 mx-4 md:w-96 rounded-3xl shadow-md sm:w-80 sm:mx-0 "
         style={{
           backgroundColor: bgColor,
         }}
@@ -60,22 +62,22 @@ export const ProfileData = ({bgColor}: {bgColor: string}) => {
           <h1 className="text-white font-semibold text-lg">PROFILE</h1>
         </div>
 
-        <div className=" bg-white h-fit w-full pb-4 rounded-3xl flex flex-col justify-around items-center">
+        <div className=" bg-white h-fit w-full pb-4 rounded-3xl flex flex-col justify-around items-center dark:bg-slate-900">
           <div className="w-full h-1/2 flex justify-between items-center px-3 pt-2">
             <div className="flex flex-col justify-center items-center">
-              <h1 className="text-gray-500 text-xs">Completed</h1>
-              <h1 className="text-gray-600 text-sm">340</h1>
+              <h1 className="text-gray-500 dark:text-gray-500 text-xs">Completed</h1>
+              <h1 className="text-gray-600 dark:text-gray-400 text-sm">340</h1>
             </div>
             <div className="flex flex-col justify-center items-center">
-              <h1 className="text-gray-500 text-xs">Pending</h1>
-              <h1 className="text-gray-600 text-sm">1356</h1>
+              <h1 className="text-gray-500 dark:text-gray-500 text-xs">Pending</h1>
+              <h1 className="text-gray-600 dark:text-gray-400 text-sm">1356</h1>
             </div>
           </div>
           <div className="w-full h-1/2 flex flex-col justify-center items-center">
-            <h1 className="text-gray-700 font-bold text-xl">
+            <h1 className="text-gray-700 dark:text-gray-200 font-bold text-xl">
               {capitalizeText(user?.name || "")}
             </h1>
-            <h1 className="text-gray-500 text-sm">{user?.email}</h1>
+            <h1 className="text-gray-500 dark:text-gray-400 text-sm">{user?.email}</h1>
           </div>
 
           <div className="w-full flex justify-center items-center mt-12 gap-4 px-4">
@@ -85,19 +87,19 @@ export const ProfileData = ({bgColor}: {bgColor: string}) => {
               currentEmail={user.email}
             />}
 
-            <Button variant="outline" className="w-full"
+            <Button variant="outline" className="w-full dark:bg-slate-800 dark:hover:bg-slate-700 "
                 onClick={handleLogout}
             >
-              <IoLogOut className="text-gray-800 w-8 h-8 scale-125" />
+              <IoLogOut className="text-gray-800 dark:text-gray-200 w-8 h-8 scale-125" />
               Logout
             </Button>
           </div>
 
-          <div className="w-full grid grid-cols-2 justify-center items-center pt-4 mt-4 gap-4 px-4 border-t-2 border-gray-200">
+          <div className="w-full grid grid-cols-2 justify-center items-center pt-4 mt-4 gap-4 px-4 border-t-2 border-gray-200 ">
             <Link href='/seed' >
 
-              <Button variant='outline' className="w-full">
-                <IoColorWand className="text-gray-800 w-8 h-8 scale-125"/>
+              <Button variant='outline' className="w-full dark:bg-slate-800 dark:hover:bg-slate-700">
+                <IoColorWand className="text-gray-800   dark:text-gray-200 w-8 h-8 scale-125"/>
                 Seed Data</Button>
             </Link>
             <DeleteProfileModal />

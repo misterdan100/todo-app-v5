@@ -69,30 +69,52 @@ export default function SeedPage() {
   
   return (
     <div className="grid gap-4">
-        <Button className="w-52 border-sky-600" variant='outline'
+
+        <Button className="w-52 h-fit border-sky-600 dark:bg-slate-700 grid justify-center" variant='outline'
             onClick={handleSeedTasks}
         >
-            {loading.loading && loading.button === 'tasks' ? <IoReload className='animate-spin'/> : <IoCopy className='scale-110'/> }
-            Seed Tasks
+            <div className='flex items-center justify-center gap-3'>
+                {loading.loading && loading.button === 'tasks' ? <IoReload className='animate-spin'/> : <IoCopy className='scale-110'/> }
+                Seed Tasks
+            </div>
+            <p
+                className=' font-normal text-sm dark:text-gray-400'
+            >Create demo tasks</p>
         </Button>
 
-        <Button className="w-52 border-lime-600" variant='outline'
+        <Button className="w-52 h-fit border-lime-600 dark:bg-slate-700 grid justify-center" variant='outline'
             onClick={handleSeedProjects}
         >
-            {loading.loading && loading.button === 'projects' ? <IoReload className='animate-spin'/> : <IoAlbumsOutline className='scale-110'/> }
-            Seed Projects
+            <div className='flex items-center justify-center gap-3'>
+                {loading.loading && loading.button === 'projects' ? <IoReload className='animate-spin'/> : <IoAlbumsOutline className='scale-110'/> }
+                Seed Projects
+            </div>
+            <p
+                className=' font-normal text-sm dark:text-gray-400'
+            >Create demo projects</p>
         </Button>
 
-        <Button className="w-52 border-violet-600" variant='outline'
+        <Button className="w-52 h-fit border-violet-600 dark:bg-slate-700 grid justify-center" variant='outline'
             onClick={handleSeedAll}
         >
-            {loading.loading && loading.button === 'all' ? <IoReload className='animate-spin'/> : <IoFileTrayFull className='scale-110'/> }
-            Seed All
+            <div className='flex items-center justify-center gap-3'>
+                {loading.loading && loading.button === 'all' ? <IoReload className='animate-spin'/> : <IoFileTrayFull className='scale-110'/> }
+                Seed All
+            </div>
+            <p
+                className=' font-normal text-sm dark:text-gray-400'
+            >Create projects, tasks, and tags</p>
         </Button>
 
-        <Button className="w-52 border-sky-600" variant='destructive'>
-            {loading.loading && loading.button === 'clean' ? <IoReload className='animate-spin'/> : <IoTrash className='scale-110'/> }
-            Clean Data
+        <Button className="w-52 h-fit grid justify-center" variant='destructive'
+        >
+            <div className='flex items-center justify-center gap-3'>
+                {loading.loading && loading.button === 'clean' ? <IoReload className='animate-spin'/> : <IoTrash className='scale-110'/> }
+                Clean Data
+            </div>
+            <p
+                className=' font-normal text-sm dark:text-gray-400'
+            >Remove all data</p>
         </Button>
     </div>
   )

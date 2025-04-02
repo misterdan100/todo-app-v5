@@ -5,7 +5,7 @@ import { Status } from '@/interface'
 
 export const changeStatus = async (id: string, newStatus: Status) => {
     try {
-        const url = `/tasks/${id}`
+        const url = `/tasks/${id}/status`
         const res = await axios.put(url, {
             status: newStatus
         })

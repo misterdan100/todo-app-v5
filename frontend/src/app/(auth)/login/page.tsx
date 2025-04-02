@@ -8,6 +8,7 @@ export default function LoginPage() {
     <div className="flex w-full mt-[4rem] justify-center">
 
       <LoginForm />
+
     </div>
   )
 }

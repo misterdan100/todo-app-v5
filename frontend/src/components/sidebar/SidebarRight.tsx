@@ -55,7 +55,7 @@ if( isSidebarRightOpen && session ) return (
         {/* Profile card */}
         <Link
           href='/profile'
-          className="px-2 py-4 flex items-center gap-3 hover:bg-[#ededed] transition duration-300 ease-in-out cursor-pointer border-2 border-transparent hover:border-2 hover:border-white rounded-lg"
+          className="px-2 py-4 flex items-center gap-3 hover:bg-[#ededed] transition duration-300 ease-in-out cursor-pointer border-2 border-transparent hover:border-2 hover:border-white dark:hover:bg-slate-800 dark:hover:border-slate-700 rounded-lg"
         >
           <Image
             src={"/logo.svg"}
@@ -82,9 +82,9 @@ if( isSidebarRightOpen && session ) return (
 
           <div className="text-gray-400">
             <p>Total Tasks:</p>
-            <p className="relative flex gap-2 pl-4">
-              <span className="absolute h-[80%] w-[0.2rem] left-[1px] top-1/2 translate-y-[-50%] bg-purple-500 rounded-[5px]"></span>
-              <span className="font-medium text-4xl text-[#333]">
+            <p className="relative flex gap-2 pl-4 text-[#333] dark:text-gray-400">
+              <span className="absolute h-[80%] w-[0.2rem] left-[1px] top-1/2 translate-y-[-50%] bg-purple-500 dark:bg-purple-400 rounded-[5px]"></span>
+              <span className="font-medium text-4xl">
               {metrics.total}
               </span>
             </p> 
@@ -92,9 +92,9 @@ if( isSidebarRightOpen && session ) return (
 
           <div className="text-gray-400">
             <p>Completed:</p>
-            <p className="relative flex gap-2 pl-4">
-              <span className="absolute h-[80%] w-[0.2rem] left-[1px] top-1/2 translate-y-[-50%] bg-teal-500 rounded-[5px]"></span>
-              <span className="font-medium text-4xl text-[#333]">
+            <p className="relative flex gap-2 pl-4 text-[#333] dark:text-gray-400">
+              <span className="absolute h-[80%] w-[0.2rem] left-[1px] top-1/2 translate-y-[-50%] bg-teal-500 dark:bg-teal-400 rounded-[5px]"></span>
+              <span className="font-medium text-4xl">
                 {metrics.completed}
               </span>
             </p> 
@@ -102,9 +102,9 @@ if( isSidebarRightOpen && session ) return (
 
           <div className="text-gray-400">
             <p>Pending:</p>
-            <p className="relative flex gap-2 pl-4">
-              <span className="absolute h-[80%] w-[0.2rem] left-[1px] top-1/2 translate-y-[-50%] bg-orange-500 rounded-[5px]"></span>
-              <span className="font-medium text-4xl text-[#333]">
+            <p className="relative flex gap-2 pl-4 text-[#333] dark:text-gray-400">
+              <span className="absolute h-[80%] w-[0.2rem] left-[1px] top-1/2 translate-y-[-50%] bg-orange-500 dark:bg-orange-400 rounded-[5px]"></span>
+              <span className="font-medium text-4xl">
               {metrics.pending}
               </span>
             </p> 
@@ -112,9 +112,9 @@ if( isSidebarRightOpen && session ) return (
 
           <div className="text-gray-400">
             <p>Overdue:</p>
-            <p className="relative flex gap-2 pl-4">
-              <span className="absolute h-[80%] w-[0.2rem] left-[1px] top-1/2 translate-y-[-50%] bg-lime-500 rounded-[5px]"></span>
-              <span className="font-medium text-4xl text-[#333]">
+            <p className="relative flex gap-2 pl-4 text-[#333] dark:text-gray-400">
+              <span className="absolute h-[80%] w-[0.2rem] left-[1px] top-1/2 translate-y-[-50%] bg-lime-500 dark:bg-lime-400 rounded-[5px]"></span>
+              <span className="font-medium text-4xl">
               {metrics.overdue}
               </span>
             </p> 

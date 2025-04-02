@@ -30,9 +30,9 @@ export const FilterButtons = () => {
   };
 
   return (
-    <div className="relative py-2 px-2 grid grid-cols-5 items-center gap-3 bg-[#f9f9f9] border-2 border-white rounded-md w-fit">
+    <div className="relative text-gray-500 py-2 px-2 grid grid-cols-5 items-center gap-3 bg-[#f9f9f9] border-2 border-white rounded-md w-fit dark:text-gray-400  dark:bg-slate-800 dark:border-slate-700">
       <span
-        className="absolute left-[5px] bg-[#EDEDED] rounded-md transition-all duration-300"
+        className="absolute left-[5px] bg-[#EDEDED] dark:bg-slate-700 rounded-md transition-all duration-300"
         style={{
           width: "calc(100% / 5 - 10px)",
           height: "calc(100% - 10px)",
@@ -47,8 +47,8 @@ export const FilterButtons = () => {
       {filters.map((filter, index) => (
         <button
           key={index}
-          className={`relative px-1 z-10 font-medium text-sm ${
-            activeIndex === index ? "text-violet-500" : "text-gray-500"
+          className={`relative px-1 z-10 font-medium text-sm dark:hover:text-gray-200 transition-colors ${
+            activeIndex === index ? "text-violet-500 dark:text-violet-300" : ""
           }`}
           onClick={() => handleSelectFilter(filter.toLowerCase(), index)}
         >

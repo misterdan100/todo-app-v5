@@ -1,16 +1,19 @@
 "use client"
 
+import { RootState } from "@/store/store"
 import { useTheme } from "next-themes"
+import { useSelector } from "react-redux"
 import { Toaster as Sonner } from "sonner"
 
 type ToasterProps = React.ComponentProps<typeof Sonner>
 
 const Toaster = ({ ...props }: ToasterProps) => {
-  const { theme = "system" } = useTheme()
+  // const { resolvedTheme } = useTheme()
+  const theme = useSelector( (state: RootState) => state.theme.theme)
 
   return (
     <Sonner
-      theme={theme as ToasterProps["theme"]}
+      theme={theme}
       className="toaster group"
       toastOptions={{
         classNames: {

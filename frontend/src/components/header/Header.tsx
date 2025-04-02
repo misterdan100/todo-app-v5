@@ -1,7 +1,7 @@
 "use client";
 
 import { uiConfig } from "@/config/uiConfig";
-import { IoList, IoLogoGithub, IoMoon, IoPersonSharp } from "react-icons/io5";
+import { IoList, IoLogoGithub, IoMoon, IoPersonSharp, IoSunnySharp } from "react-icons/io5";
 import Link from "next/link";
 import styled from "styled-components";
 import Image from "next/image";
@@ -14,6 +14,7 @@ import { useRouter } from "next/navigation";
 import { verifySession } from "@/store/auth/sessionSlice";
 import { mutate } from "swr";
 import { useTasks } from "@/hooks";
+import { toggleTheme } from "@/store/ui/themeSlice";
 
 const { mainColor } = uiConfig;
 
@@ -30,17 +31,14 @@ const StyledLink = styled(Link)<{ $sidebarOpen?: boolean }>`
 export const Header = () => {
   const router = useRouter()
   const user = useSelector( (state: RootState) => state.session.user)
-  const dispatch = useDispatch<AppDispatch>();
   const allTasks = useSelector((state: RootState) => state.tasks.allTasks);
-  const isSidebarRightOpen = useSelector(
-    (state: RootState) => state.sidebar.isSidebarRightOpen
-  );
-  const isSidebarMainOpen = useSelector(
-    (state: RootState) => state.sidebar.isSidebarMainOpen
-  );
+  const isSidebarMainOpen = useSelector((state: RootState) => state.sidebar.isSidebarMainOpen);
+  const isSidebarRightOpen = useSelector((state: RootState) => state.sidebar.isSidebarRightOpen);
+  const theme = useSelector( (state: RootState) => state.theme.theme)
+  const dispatch = useDispatch<AppDispatch>();
   const [totalTasks, setTotalTasks] = useState(0);
 
-  // const {} = useTasks({})
+  const {} = useTasks({})
 
   useEffect(() => {
     dispatch(verifySession())
@@ -52,7 +50,7 @@ export const Header = () => {
   }, [allTasks]);
 
   return (
-    <header className="flex flex-col items-center justify-between w-full gap-4 px-6 my-4 md:flex-row">
+    <header className="flex flex-col items-center justify-between w-full gap-4 px-6 my-4 md:flex-row dark:bg-slate-900">
       {/* Title, name and tasks */}
       <div className="flex items-center gap-2 text-center md:text-start">
         <Link href="/" className="flex items-center justify-center sm:hidden">
@@ -63,17 +61,17 @@ export const Header = () => {
             <span role="img" aria-label="wave">
               👋
             </span>
-            {user ? `Welcome, ${user.name}!` : "Welcome to Mister Todos"}
+            {user ? ` Welcome, ${user.name}!` : " Welcome to Mister Todos"}
           </h1>
 
-          <p>
+          <p className="dark:text-gray-300">
             {user ? (
               <>
                 You have{" "}
                 <span
-                  className={`font-bold`}
+                  className={`font-bold dark:text-violet-400`}
                   style={{
-                    color: mainColor,
+                    color: theme === 'light' ? mainColor : '',
                   }}
                 >
                   {totalTasks}
@@ -106,7 +104,7 @@ export const Header = () => {
             target="_blank"
             passHref
             rel="noopener noreferrer"
-            className="h-[40px] w-[40px] rounded-full flex items-center justify-center text-lg border-2 border-[#E6E6E6] transition-colors"
+            className="h-[40px] w-[40px] rounded-full flex items-center justify-center text-lg border-2 border-[#E6E6E6]  dark:border-violet-400 transition-colors"
           >
             {" "}
             <IoLogoGithub />{" "}
@@ -115,16 +113,20 @@ export const Header = () => {
           <StyledLink
             href=""
             passHref
-            className="h-[40px] w-[40px] rounded-full flex items-center justify-center text-lg border-2 border-[#E6E6E6] transition-colors"
+            className="h-[40px] w-[40px] rounded-full flex items-center justify-center text-lg border-2 border-[#E6E6E6]  dark:border-violet-400 transition-colors"
+            onClick={() => dispatch(toggleTheme())}
           >
-            {" "}
-            <IoMoon />{" "}
+            { theme === 'light' ? (
+              <IoMoon />
+            ) : (
+              <IoSunnySharp />
+            )}
           </StyledLink>
 
           <StyledLink
             href=""
             passHref
-            className="h-[40px] w-[40px] rounded-full flex items-center justify-center text-lg border-2 border-[#E6E6E6] transition-colors"
+            className="h-[40px] w-[40px] rounded-full flex items-center justify-center text-lg border-2 border-[#E6E6E6]  dark:border-violet-400 transition-colors"
             onClick={() => !user ? router.push('/login') : dispatch(switchSidebarRight(!isSidebarRightOpen))}
             $sidebarOpen={isSidebarRightOpen}
           >

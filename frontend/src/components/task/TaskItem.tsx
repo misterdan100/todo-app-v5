@@ -6,6 +6,8 @@ import clsx from "clsx";
 import { motion } from "motion/react";
 import {
   IoCheckmarkCircle, IoEllipseOutline,
+  IoRefresh,
+  IoReloadCircleOutline,
   IoStar,
   IoTrashBin
 } from "react-icons/io5";
@@ -38,6 +40,7 @@ export const TaskItem = ({ task }: Props) => {
   const { id, name, description, dueDate, priority, favorite: taskFav, status } = task;
   const [favorite, setFavorite] = useState(task.favorite);
   const [isCompleted, setIsCompleted] = useState(status === 'completed' ? true : false);
+  const [loadingDelete, setLoadingDelete] = useState(false)
 
   // Redux states
   const keyCache = useSelector( (state: RootState) => state.tasks.keyCache)
@@ -63,19 +66,21 @@ export const TaskItem = ({ task }: Props) => {
   };
 
   const handleDeleteTask = async () => {
-
-      const res = await deleteTask({taskId: id});
-      if(res.success) {
-
-        mutate(keyCache)
-        if(keyCache !== '/tasks') {
-          mutate('/tasks')
-        }
-        toast.success(res.message)
-        return
-
+    setLoadingDelete(true)
+    
+    const res = await deleteTask({taskId: id});
+    if(res.success) {
+      
+      mutate(keyCache)
+      if(keyCache !== '/tasks') {
+        mutate('/tasks')
       }
-      toast.error(res.message)
+      toast.success(res.message)
+      return
+      
+    }
+    toast.error(res.message)
+    setLoadingDelete(false)
   };
 
   // If this task has been marked as deleted, don't render it
@@ -108,14 +113,14 @@ export const TaskItem = ({ task }: Props) => {
 
   return (
     <motion.div
-      className="h-44 px-4 py-3 flex flex-col gap-4 shadow-sm bg-[#f9f9f9] rounded-lg border-2 border-white"
+      className="h-fit px-4 py-3 flex flex-col gap-4 hover:shadow-lg shadow-gray-200 bg-[#f9f9f9] rounded-lg border-2 border-white  dark:bg-slate-900 dark:border-slate-700 dark:shadow-slate-900 transition-all"
       variants={item}
     >
       <div>
-        <h4 className="text-2xl font-bold text-gray-800 cursor-pointer hover:text-primary transition-colors"
+        <h4 className="text-2xl font-bold text-gray-800 dark:text-gray-200 cursor-pointer hover:text-primary transition-colors"
           onClick={handleEditTask}
         >{name}</h4>
-        <p className="line-clamp-3">{description}</p>
+        <p className="line-clamp-3 dark:text-gray-300">{description}</p>
       </div>
 
       {/* Footer card */}
@@ -152,7 +157,8 @@ export const TaskItem = ({ task }: Props) => {
             )}
           </button>
           <button className="text-red-400" onClick={handleDeleteTask}>
-            <IoTrashBin />
+            { loadingDelete ? <IoRefresh className="animate-spin text-gray-800 dark:text-gray-300"/> : <IoTrashBin />}
+            
           </button>
         </div>
       </div>

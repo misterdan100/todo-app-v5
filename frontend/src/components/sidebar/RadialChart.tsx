@@ -44,7 +44,7 @@ export function RadialChart({ completed = 0 , total = 0 }: Props) {
 
 
   return (
-    <Card className="flex flex-col border-2 border-white shadow-none bg-[#ededed] ">
+    <Card className="flex flex-col border-2 border-white shadow-none bg-[#ededed] dark:bg-slate-800 dark:border-slate-700">
       <CardHeader className="items-center pb-0">
         <CardTitle>Completed vs Pending Tasks</CardTitle>
         <CardDescription>Task completion status.</CardDescription>

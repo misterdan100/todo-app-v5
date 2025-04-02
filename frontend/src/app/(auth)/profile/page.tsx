@@ -10,7 +10,7 @@ export default function ProfilePage() {
     const bgColor = generateRandomReadableColor()
   return (
 
-      <div className="w-full flex justify-center pt-10 relative">
+      <div className="w-full flex justify-center pt-10 relative ">
         {/* Image Profile */}
 
         <ProfileData bgColor={bgColor}/>

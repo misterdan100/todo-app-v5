@@ -68,7 +68,7 @@ export const RegisterForm = () => {
     }
 
   return (
-    <Card className="w-[400px]">
+    <Card className="w-[400px] dark:bg-slate-900">
       <CardHeader>
         <CardTitle className="text-2xl">Register for an Account</CardTitle>
         <CardDescription>
@@ -78,7 +78,7 @@ export const RegisterForm = () => {
             style={{
               color: uiConfig.mainColor,
             }}
-            href="/register"
+            href="/login"
           >
             {" "}
             Login here

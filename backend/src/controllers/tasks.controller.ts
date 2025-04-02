@@ -300,6 +300,27 @@ export const changeFavoriteTask = async (req: Request, res: Response) => {
     }
 }
 
+export const changeStatusTask = async (req: Request, res: Response) => {
+    try {
+        const { id } = req.params
+        const task = await Task.findByPk(id)
+
+        if(!task) {
+            res.status(404).json({error: 'Task not found'})
+            return
+        }
+
+        task.status = task.status !== 'completed' ? 'completed' : 'pending'
+        task.save()
+        res.status(200).json(task)
+        
+    } catch (error) {
+        console.log('[ERROR_CHANGESTATUSTASK]', error.message)
+        res.status(500).json({error: 'Error changing status task'})
+    }
+}
+
+
 export const deleteTask = async (req: Request, res: Response) => {
     try {
         const userId = req.user.id

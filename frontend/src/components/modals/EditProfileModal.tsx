@@ -80,7 +80,7 @@ export function EditProfileModal({ currentName, currentEmail }: Props) {
     >
       <DialogTrigger asChild>
         <Button 
-            className="bg-yellow-500 hover:bg-yellow-400 w-full"
+            className="bg-yellow-500 hover:bg-yellow-400 dark:bg-yellow-600 dark:hover:bg-yellow-500 w-full"
         >
           <IoCreate className="text-white w-8 h-8 scale-125" />
           Edit Profile

@@ -32,7 +32,7 @@ export const ShowTasksSection = ({ tasks }: Props) => {
           : tasksToShow?.map((task) => <TaskItem key={task.id} task={task} />)}
 
         <motion.button
-          className="w-full py-2 text-lg font-medium text-gray-500 transition duration-200 ease-in-out border-2 border-gray-300 border-dashed rounded-md h-36 hover:bg-gray-200 hover:border-none"
+          className="w-full h-full py-2 text-lg font-medium text-gray-500 transition duration-200 ease-in-out border-2 border-gray-300 border-dashed rounded-md  hover:bg-gray-200 hover:border-none dark:hover:bg-slate-700 dark:hover:text-gray-300"
           variants={item}
           onClick={() => dispatch(switchModal(true))}
         >

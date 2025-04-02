@@ -34,6 +34,7 @@ import { useDispatch } from 'react-redux';
 import { AppDispatch } from '@/store/store';
 import { verifySession } from '@/store/auth/sessionSlice';
 import { revalidateAllData } from '@/actions';
+import { DemoCredentials } from '@/app/(auth)/login/DemoCredentials';
 // ShadCN imports
 
 type InputsForm = {
@@ -60,14 +61,15 @@ export const LoginForm = () => {
         return
       }
 
-      await dispatch(verifySession())
-
       await revalidateAllData({})
+      
+      await dispatch(verifySession())
+      router.refresh()
       router.push('/')
     }
 
   return (
-    <Card className="w-[400px]">
+    <Card className="w-[400px] dark:bg-slate-900">
       <CardHeader>
         <CardTitle className="text-2xl">Login to Your Account</CardTitle>
         <CardDescription>
@@ -123,6 +125,8 @@ export const LoginForm = () => {
           </div>
           <Button className="w-full mt-8">Login Now</Button>
         </form>
+
+        <DemoCredentials />
       </CardContent>
     </Card>
   );
