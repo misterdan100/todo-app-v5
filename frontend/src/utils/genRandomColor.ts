@@ -8,7 +8,7 @@ export function generateRandomReadableColor() {
   const MAX_VALUE = 220; // Not too light
   const SATURATION_THRESHOLD = 30; // To avoid gray colors
   
-  let r, g, b;
+  let r = 0, g = 0, b = 0;
   let isReadable = false;
   
   while (!isReadable) {

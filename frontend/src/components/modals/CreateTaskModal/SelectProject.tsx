@@ -144,7 +144,7 @@ const EmptySearch = ({ onCreate }: { onCreate: (value: string) => void }) => {
       onClick={() => onCreate(search)}
     >
       <IoAddCircleOutline size={18} />
-      <span className="text-sm">Create "{capitalizeText(search)}" project</span>
+      <span className="text-sm">{`Create &quot;${capitalizeText(search)}&quot; project`}</span>
     </div>
   );
 };

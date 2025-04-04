@@ -73,7 +73,7 @@ export const LoginForm = () => {
       <CardHeader>
         <CardTitle className="text-2xl">Login to Your Account</CardTitle>
         <CardDescription>
-          Login Now. Don't have an account?
+          {"Login Now. Don&apos;t have an account?"}
           <Link
             className="font-bold"
             style={{

@@ -12,7 +12,7 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { IoCreate, IoSync } from "react-icons/io5";
 import { InputErrorMessage } from "../errors/InputErrorMessage";
@@ -21,7 +21,6 @@ import { toast } from "sonner";
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "@/store/store";
 import { useRouter } from "next/navigation";
-import { revalidatePath } from "next/cache";
 import { verifySession } from "@/store/auth/sessionSlice";
 
 type Props = {
@@ -90,7 +89,7 @@ export function EditProfileModal({ currentName, currentEmail }: Props) {
         <DialogHeader>
           <DialogTitle>Edit profile</DialogTitle>
           <DialogDescription>
-            Make changes to your profile here. Click save when you're done.
+            {"Make changes to your profile here. Click save when you&apos;re done."}
           </DialogDescription>
         </DialogHeader>
         <form onSubmit={handleSubmit(handleEditProfile)}>

@@ -1,5 +1,4 @@
 export * from './useTasks'
-export * from './useTask'
 export * from './useTasksFiltered'
 export * from './useTagsTasks'
 export * from './useTaskByTag'

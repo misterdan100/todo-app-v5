@@ -5,6 +5,8 @@ import { NextResponse } from 'next/server'
 import { NextRequest } from 'next/server'
 import { isAxiosError } from 'axios'
 
+import { revalidateAllData } from './actions'
+
 export async function middleware(request: NextRequest) {    
     try {
         const currentURL = request.nextUrl.pathname
@@ -34,7 +36,7 @@ export async function middleware(request: NextRequest) {
         //define userinfo in cookies
         const res = NextResponse.next()
         
-        res.cookies.set('session', JSON.stringify(data.data))        
+        // res.cookies.set('session', JSON.stringify(data.data))        
         return res
     } catch (error) {
         if(isAxiosError(error) && error.message)
