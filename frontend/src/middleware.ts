@@ -11,18 +11,14 @@ export async function middleware(request: NextRequest) {
     try {
         const currentURL = request.nextUrl.pathname
         const tokenCookie = request.cookies.get('token')?.value
+        console.log('token:' + tokenCookie)
 
         if((currentURL.startsWith('/login') || currentURL.startsWith('/register') ) && !tokenCookie) {
             return NextResponse.next()
         }
 
         const urlReqSession = '/auth/session'
-        const { data } = await axios<{success: boolean, message?: string, data?: {}}>(urlReqSession, {
-            headers: {
-                Cookie: `token=${tokenCookie}` // write cookies manually in the request 
-                                                // because apparentlly middleware doesn't send cookies
-            }
-        })
+        const { data } = await axios<{success: boolean, message?: string, data?: {}}>(urlReqSession, )
 
         if(!data.success) {
             return NextResponse.redirect(new URL('/login', request.url))
