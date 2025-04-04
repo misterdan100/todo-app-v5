@@ -42,7 +42,7 @@ export const createUser = async (req: Request, res: Response) => {
 
         res.cookie('token', token, cookiesConfig)
 
-        res.status(200).json({ success: true, data: savedUser})
+        res.status(200).json({success: true, data: {token: token}})
         
     } catch (error) {
         console.log('[ERROR_CREATEUSER]', error.message)
@@ -80,13 +80,19 @@ export const getUserById = async (req: Request, res: Response) => {
 export const verifySession = async (req: Request, res: Response) => {
     try {
         // read and verify cookies
-        if(!req.cookies.token) {
+        const tokenLS = req.body.token
+
+        if(!tokenLS) {
             res.status(401).json({success: false, message: 'Unauthorized user'})
             return
         }
+        // if(!req.cookies.token) {
+        //     res.status(401).json({success: false, message: 'Unauthorized user'})
+        //     return
+        // }
 
         // verify jwt
-        const token = jwt.verify(req.cookies.token, process.env.JWT_SECRET) as jwt.JwtPayload
+        const token = jwt.verify(tokenLS, process.env.JWT_SECRET) as jwt.JwtPayload
         if(!token) {
             res.status(401).json({success: false, message: 'Unauthorized request, invalid token.'})
             return 
@@ -152,7 +158,7 @@ export const logingUser = async (req: Request, res: Response) => {
         // set token in cookies
         res.cookie('token', newToken, cookiesConfig)
 
-        res.status(200).json({success: true})
+        res.status(200).json({success: true, data: {token: newToken}})
         
     } catch (error) {
         console.log('[ERROR_LOGINUSER]', error.message)

@@ -20,7 +20,7 @@ export const registerUser = async ({email, name, password}: Props) => {
 
         const { data } = await axios.post(url, dataUser)
 
-        return {success: true, ...data}
+        return data
 
     } catch (error) {
         if(isAxiosError(error) && error.response) {

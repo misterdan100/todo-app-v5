@@ -13,7 +13,7 @@ router.delete('/users', deleteUser)
 
 router.post('/auth/login', logingUser)
 router.post('/auth/register', createUser)
-router.get('/auth/session', verifySession)
+router.post('/auth/session', verifySession)
 router.get('/auth/logout', logoutUser)
 
 router.post('/users/seed')

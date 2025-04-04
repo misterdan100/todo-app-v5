@@ -54,13 +54,15 @@ export const LoginForm = () => {
     })
 
     const handleLogin = async (data: InputsForm) => {
-      const res: {success: boolean, message?: string} = await loginUser({email: data.email.toLowerCase(), password: data.password.trim()})
+      const res: {success: boolean, data?: {token: string}, message?: string} = await loginUser({email: data.email.toLowerCase(), password: data.password.trim()})
 
       if( res.success === false) {
         toast.error(res.message)
         return
       }
 
+      localStorage.setItem('token', res.data?.token as string)
+      
       await revalidateAllData({})
       
       await dispatch(verifySession())

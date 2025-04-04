@@ -53,15 +53,18 @@ export const RegisterForm = () => {
         name: data.name.trim(),
         password: data.password.trim()
       }
-      const res: {success: boolean, message: string} = await registerUser(dataForRegister)
+      const res: {success: boolean, data?: {token: string}, message?: string} = await registerUser(dataForRegister)
       
 
       if( res.success === false) {
-        setErrorLogin(res.message)
+        setErrorLogin(res.message ?? '')
         toast.error(res.message)
         return
       }
       toast.success('User successfully registered')
+
+      localStorage.setItem('token', res.data?.token ?? '')
+
       await dispatch(verifySession())
       await revalidateAllData({})
       router.replace('/start')
