@@ -62,6 +62,10 @@ export const LoginForm = () => {
       }
 
       localStorage.setItem('token', res.data?.token as string)
+      document.cookie = `token=${res.data?.token}; path=/; max-age=86400` // 1 day
+      document.cookie = `cookieDocument=true; path=/; max-age=86400` // 1 day
+
+      
       
       await revalidateAllData({})
       
