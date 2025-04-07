@@ -152,7 +152,7 @@ function EmptyStateWithAction({ onCreate }: { onCreate: (value: string) => void 
         onClick={() => onCreate(search.toLowerCase().trim())}
       >
         <IoAddCircleOutline size={18} />
-        <span className="text-sm">{`Create &quot${search}&quot tag`}</span>
+        <span className="text-sm">Create &quot;{search}&quot; tag</span>
       </div>
     </div>
   );
