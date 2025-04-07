@@ -136,7 +136,7 @@ export const createProject = async (req: Request, res: Response) => {
         res.json(newProject);
         return
     } catch (error) {
-        console.log('[CREATEPROJECT]', error.message);
+        console.log('[ERROR_CREATEPROJECT]', error.message);
         res.status(400).json({error: 'Error creating project'});
     }
 };

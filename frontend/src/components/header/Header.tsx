@@ -10,7 +10,7 @@ import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "@/store/store";
 import { switchSidebarMain, switchSidebarRight } from "@/store/ui/sidebarSlice";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { verifySession } from "@/store/auth/sessionSlice";
 import { mutate } from "swr";
 import { useTasks } from "@/hooks";
@@ -30,7 +30,8 @@ const StyledLink = styled(Link)<{ $sidebarOpen?: boolean }>`
 
 export const Header = () => {
   const router = useRouter()
-  const user = useSelector( (state: RootState) => state.session.user)
+  const pathname = usePathname()
+  const {user, activeSession, loadingSession} = useSelector( (state: RootState) => state.session)
   const allTasks = useSelector((state: RootState) => state.tasks.allTasks);
   const isSidebarMainOpen = useSelector((state: RootState) => state.sidebar.isSidebarMainOpen);
   const isSidebarRightOpen = useSelector((state: RootState) => state.sidebar.isSidebarRightOpen);
@@ -48,6 +49,12 @@ export const Header = () => {
   useEffect(() => {
     setTotalTasks(allTasks.length);
   }, [allTasks]);
+
+  if(!loadingSession && !activeSession) {
+    if(pathname !== '/login' && pathname !== '/register') {
+      router.push('/login')
+    }
+  }
 
   return (
     <header className="flex flex-col items-center justify-between w-full gap-4 px-6 my-4 md:flex-row dark:bg-slate-900">
@@ -79,7 +86,26 @@ export const Header = () => {
                 active tasks
               </>
             ) : (
-              "Please login or register to view your tasks"
+              <>
+              Please 
+              <Link
+                href="/login"
+                className="font-bold"
+                style={{
+                  color: theme === 'light' ? mainColor : '',
+                }}
+              > login </Link>
+              
+              or 
+              <Link
+                href="/register"
+                className="font-bold"
+                style={{
+                  color: theme === 'light' ? mainColor : '',
+                }}
+              > register </Link>
+              to view your tasks
+              </>
             )}
           </p>
         </div>

@@ -61,8 +61,8 @@ export const RegisterForm = () => {
         toast.error(res.message)
         return
       }
-      toast.success('User successfully registered')
 
+      toast.success('User successfully registered')
       localStorage.setItem('token', res.data?.token ?? '')
 
       await dispatch(verifySession())

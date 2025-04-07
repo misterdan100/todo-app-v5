@@ -1,33 +1,29 @@
-
-import axios from '@/config/axios'
-
 import { NextResponse } from 'next/server'
 import { NextRequest } from 'next/server'
-import { isAxiosError } from 'axios'
 
 export async function middleware(request: NextRequest) {    
     try {
         const currentURL = request.nextUrl.pathname
         const tokenCookie = request.cookies.get('token')?.value
-        console.log('token in middleware', tokenCookie)
+
 
         if((currentURL.startsWith('/login') || currentURL.startsWith('/register') ) && !tokenCookie) {
             return NextResponse.next()
         }
 
-        const urlReqSession = '/auth/session'
-        const { data } = await axios<{success: boolean, message?: string, data?: {}}>(urlReqSession, {
+        const urlReqSession = `${process.env.NEXT_PUBLIC_API_URL}/api/auth/session`
+        
+        const response = await fetch(urlReqSession, {
             method: 'POST',
             headers: {
-                Cookie: `token=${tokenCookie}` // write cookies manually in the request 
-                                                // because apparentlly middleware doesn't send cookies
+                'Content-Type': 'application/json',
+                'Cookie': `token=${tokenCookie}`
             },
-            withCredentials: true,
-            data: {token: tokenCookie}
+            credentials: 'include',
+            body: JSON.stringify({ token: tokenCookie })
         })
-
-        console.log(data)
         
+        const data = await response.json()
 
         if(!data.success) {
             return NextResponse.redirect(new URL('/login', request.url))
@@ -41,10 +37,9 @@ export async function middleware(request: NextRequest) {
         //define userinfo in cookies
         const res = NextResponse.next()
         
-        // res.cookies.set('session', JSON.stringify(data.data))        
+        res.cookies.set('session', JSON.stringify(data))        
         return res
     } catch (error) {
-        if(isAxiosError(error) && error.message)
         console.log('[ERROR_MIDDLEWARE]', error)
         return NextResponse.redirect(new URL('/login', request.url))
     }

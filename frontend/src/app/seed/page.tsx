@@ -8,6 +8,9 @@ import { Button } from "@/components/ui/button";
 import { toast } from 'sonner';
 import { IoAlbumsOutline, IoCopy, IoFileTrayFull, IoRefresh, IoReload, IoTrash } from 'react-icons/io5';
 import { useRouter } from 'next/navigation';
+import { revalidate } from '../page';
+import { revalidatePath } from 'next/cache';
+import { revalidateAllData } from '@/actions';
 
 export default function SeedPage() {
     const router = useRouter()
@@ -27,6 +30,7 @@ export default function SeedPage() {
         }
 
         mutate('/tasks')
+        revalidateAllData({})
         setLoading({loading: false, button: ''})
         toast.success('Seed Tasks successfull')
     }
@@ -63,8 +67,27 @@ export default function SeedPage() {
 
         setLoading({loading: false, button: ''})
         mutate('/tasks')
+        revalidateAllData({})
         router.refresh()
         toast.success('Seed Tasks successfull')
+    }
+
+    const handleCleanData = async () => {
+        setLoading({loading: true, button: 'clean'})
+
+        const res = await axios('/users/cleanData')
+
+        if(!res) {
+            toast.error('Clean Data failed')
+            setLoading({loading: false, button: ''})
+            return
+        }
+
+        setLoading({loading: false, button: ''})
+        mutate('/tasks')
+        revalidateAllData({})
+        router.refresh()
+        toast.success('Clean Data successfull')
     }
   
   return (
@@ -82,7 +105,7 @@ export default function SeedPage() {
             >Create demo tasks</p>
         </Button>
 
-        <Button className="w-52 h-fit border-lime-600 dark:bg-slate-700 grid justify-center" variant='outline'
+        {/* <Button className="w-52 h-fit border-lime-600 dark:bg-slate-700 grid justify-center" variant='outline'
             onClick={handleSeedProjects}
         >
             <div className='flex items-center justify-center gap-3'>
@@ -92,7 +115,7 @@ export default function SeedPage() {
             <p
                 className=' font-normal text-sm dark:text-gray-400'
             >Create demo projects</p>
-        </Button>
+        </Button> */}
 
         <Button className="w-52 h-fit border-violet-600 dark:bg-slate-700 grid justify-center" variant='outline'
             onClick={handleSeedAll}
@@ -107,6 +130,7 @@ export default function SeedPage() {
         </Button>
 
         <Button className="w-52 h-fit grid justify-center" variant='destructive'
+            onClick={handleCleanData}
         >
             <div className='flex items-center justify-center gap-3'>
                 {loading.loading && loading.button === 'clean' ? <IoReload className='animate-spin'/> : <IoTrash className='scale-110'/> }
@@ -114,7 +138,7 @@ export default function SeedPage() {
             </div>
             <p
                 className=' font-normal text-sm dark:text-gray-400'
-            >Remove all data</p>
+            >Remove tasks, tags, and projects</p>
         </Button>
     </div>
   )

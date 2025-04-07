@@ -26,6 +26,7 @@ export const Sidebar = () => {
     (state: RootState) => state.sidebar.isSidebarMainOpen
   );
   const theme = useSelector((state: RootState) => state.theme.theme);
+  const { activeSession } = useSelector((state: RootState) => state.session);
   
   const [showItemTexts, setShowItemTexts] = useState(true);
   const dispatch = useDispatch<AppDispatch>();
@@ -97,11 +98,11 @@ export const Sidebar = () => {
       } flex-col h-full `}
     >
       <Link
-        href="/"
+        href={activeSession ? '/' : "/login"}
         className="flex items-center justify-center h-[5rem] w-full mt-4 "
         onClick={() => setShowItemTexts((prev) => !prev)}
       >
-        <Image src={theme === 'light' ? "/logotipo.svg" : '/logotipo_dark.svg'} width={100} height={100} alt="logo" />
+        <Image src={theme === 'light' ? "/logotipo.svg" : '/logotipo_dark.svg'} width={100} height={100} alt="logo" priority />
       </Link>
 
       <div className="flex flex-col items-center  px-2">
@@ -114,7 +115,7 @@ export const Sidebar = () => {
               )}
             >
               <Link
-                href={item.link}
+                href={activeSession ? item.link : "/login"}
                 className='text-[22px] flex items-center gap-2'
               >
                 {item.icon}
@@ -140,7 +141,7 @@ export const Sidebar = () => {
         </ul>
       </div>
 
-      {data && showItemTexts && (
+      {(data && showItemTexts) && activeSession && (
         <div className="flex flex-col items-center justify-start flex-1 px-2 h-full overflow-y-hidden">
           <p className="text-base text-center antialiased font-semibold uppercase pt-2 text-gray-500 dark:text-gray-400 border-t-2 border-gray-200 dark:border-slate-600  mt-6">
             Projects

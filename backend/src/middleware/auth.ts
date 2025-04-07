@@ -15,16 +15,19 @@ declare global {
 const authenticate = async (req: Request, res: Response, next: NextFunction) => {
     console.log(`Req Middleware: ${req.method} - ${req.baseUrl}`)
     try {
+        
+        const authHeader = req.headers.authorization
+        const tokenHeader = authHeader && authHeader.split(' ')[1]
 
         const tokenLS = req.body.token
 
-        if(!tokenLS) {
+        if(!tokenHeader) {
             res.status(401).json({success: false, message: 'Unauthorized user, not token'})
             return
         }
     
         // Verify JWT
-        const token = jwt.verify(tokenLS, process.env.JWT_SECRET) as jwt.JwtPayload
+        const token = jwt.verify(tokenHeader, process.env.JWT_SECRET) as jwt.JwtPayload
     
         if(!token) {
             res.status(401).json({success: false, message: 'Unauthorized request, invalid token.'})
@@ -39,13 +42,14 @@ const authenticate = async (req: Request, res: Response, next: NextFunction) => 
         }
     
         // compare user token with cookies token
-        if(user.token !== tokenLS) {
+        if(user.token !== tokenHeader) {
             res.status(401).json({success: false, message: 'Unauthorized request, not access'})
             return
         }
 
         req.user = user
-    
+        
+        console.log('backend authenticate success')
         next()
     } catch (error) {
         console.log('[ERROR_AUTHENTICATEMIDDLEWARE]', error.message)

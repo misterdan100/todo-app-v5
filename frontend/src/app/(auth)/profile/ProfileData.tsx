@@ -5,13 +5,11 @@ import { capitalizeText, getAvatarLetters } from "@/utils";
 import { useDispatch, useSelector } from "react-redux";
 
 import { Button } from "@/components/ui/button";
-import { generateRandomReadableColor } from "@/utils";
-import { IoColorWand, IoCreate, IoLogOut, IoTrash } from "react-icons/io5";
+import { IoColorWand, IoLogOut } from "react-icons/io5";
 import { logoutUser } from "@/api/auth/logoutUser";
 import { verifySession } from "@/store/auth/sessionSlice";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
-import { useEffect, useState } from "react";
 import { uiConfig } from "@/config/uiConfig";
 import { DeleteProfileModal, EditProfileModal } from "@/components";
 import Link from "next/link";
@@ -25,14 +23,19 @@ export const ProfileData = ({bgColor}: {bgColor: string}) => {
   const letterAvatar = getAvatarLetters(user?.name || '')
   
   const handleLogout = async () => {
+
     const res = await logoutUser()
 
     if(res.success === true) {
+      toast.success('Logout successfully')
+      localStorage.removeItem('token')
       await dispatch(verifySession())
       await revalidateAllData({})
-      router.push('/login')
+      window.location.hash = '/login'
+      return
     }
     toast.error('Error logging out')
+
   }
 
   return (

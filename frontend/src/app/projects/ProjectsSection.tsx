@@ -29,9 +29,12 @@ export const ProjectsSection = () => {
           initial="hidden"
           animate="visible"
         >
-          {data?.map((item) => (
-            <ProjectCard key={item.id} project={item} />
-          ))}
+          { data.length > 0 ? 
+            data?.map((item) => (
+              <ProjectCard key={item.id} project={item} />
+            )) 
+            : 
+            <p>There are not projects to show</p>}
         </motion.div>
       </>
     );

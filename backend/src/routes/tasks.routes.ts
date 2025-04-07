@@ -15,6 +15,6 @@ router.put('/tasks/:id/favorite', changeFavoriteTask)
 router.put('/tasks/:id/status', changeStatusTask)
 router.delete('/tasks/:id', deleteTask)
 
-router.post('/tasks/seed', seedTasks)
+router.post('/tasks/seed',seedTasks)
 
 export default router

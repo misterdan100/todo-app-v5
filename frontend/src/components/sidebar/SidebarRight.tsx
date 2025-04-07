@@ -39,9 +39,11 @@ export const SidebarRight = () => {
     const res = await logoutUser()
 
     if(res.success === true) {
+      toast.success('Logout successfully')
+      localStorage.removeItem('token')
       await dispatch(verifySession())
       await revalidateAllData({})
-      router.push('/login')
+      window.location.hash = '/login'
       return
     }
     toast.error('Error logging out')

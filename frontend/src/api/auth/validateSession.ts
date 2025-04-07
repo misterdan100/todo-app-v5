@@ -2,7 +2,8 @@ import axios from '@/config/axios'
 
 export const validateSession = async () => {
     try {
-        const { data } = await axios('/auth/session')
+
+        const { data } = await axios.post('/auth/session', )
 
         if(data.success) {
             return data.data
@@ -10,7 +11,7 @@ export const validateSession = async () => {
             return null
         }
     } catch (error) {
-        // console.error("Error fetching session:", error);
+        console.error("Error fetching session:", error);
         return null
     }
 }

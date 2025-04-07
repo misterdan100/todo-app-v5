@@ -77,7 +77,6 @@ export const getTagById = async (req: Request, res: Response ) => {
 export const getTagsWithTasks = async (req: Request, res: Response) => {
     try {
         const userId = req.user.id
-        console.log('entrando que ricooooo')
         
         // clean empty tags
         // First, get all tagIds that are currently used in task_tag for this user
@@ -99,8 +98,6 @@ export const getTagsWithTasks = async (req: Request, res: Response) => {
                     : { [Op.ne]: null }
             }
         })
-
-        console.log('tags to delete', tagsToDelete)
 
         // delete selected tags to delete
         if( tagsToDelete.length > 0 ) {

@@ -356,6 +356,20 @@ export const seedTasks = async (req: Request, res: Response) => {
         // clean tasks in db
         await TaskTag.destroy({where: {userId}})
         await Task.destroy({where: {userId}})
+
+        // create tags asociated to user
+        const seedTags = seedData.tags.map(item => ({
+            name: item,
+            color: generateRandomReadableColor(),
+            userId
+        }))
+
+        await Tag.bulkCreate(seedTags)
+
+        // create projects asociated to user
+        const projects = seedData.projects.map(item => ({name: item, userId}))
+
+        await Project.bulkCreate(projects)
         
         // + mark as a favorite in a random way
         const randomBoolean = (): boolean => {
@@ -383,15 +397,15 @@ export const seedTasks = async (req: Request, res: Response) => {
         
         // + look for project id and relationate
         const chooseProject = (projectName: string): string => {
-            return projectsDB.find(item => item.name.toLowerCase() === projectName.toLowerCase()).id
+            return projectsDB.find(item => item.name.toLowerCase() === projectName.toLowerCase())?.id
         }
         
         // + look for tags id and relationate
         const chooseTags = (currentTags: string[]): string[] => {
             return currentTags.map(item => {
-                const tag = tagsDB.find( itemDB => itemDB.name.toLowerCase() === item.toLowerCase())
+                const tag = tagsDB.find(itemDB => itemDB.name.toLowerCase() === item.toLowerCase())
                 
-                return tag.id
+                return tag.id // <-- Error aquí: tag puede ser undefined
             })
         }
         
@@ -435,7 +449,7 @@ export const seedTasks = async (req: Request, res: Response) => {
         res.status(200).json(tasksDB)
 
     } catch (error) {
-        console.log('ERROR_SEEDTASKS', error.message)
+        console.log('ERROR_SEEDTASKS', error)
         res.status(500).json({error: 'Error seeding tasks'})
     }
 }

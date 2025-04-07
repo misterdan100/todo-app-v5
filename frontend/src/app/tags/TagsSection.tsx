@@ -31,7 +31,9 @@ export default function TagsSection() {
           initial='hidden'
           animate='visible'
         >
-          {tags?.map((item) => (
+          {tags?.length === 0 ? (
+            <p>There are not tags to show</p>
+          ): tags?.map((item) => (
             <TagCard 
               key={item.id}
               tag={item}

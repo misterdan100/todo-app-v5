@@ -3,6 +3,10 @@ import User from '../models/User.model'
 import bcrypt from 'bcrypt'
 import jwt from 'jsonwebtoken'
 import { cookiesConfig } from '../config/cookiesConfig'
+import TaskTag from '../models/TaskTag.model'
+import Tag from '../models/Tag.model'
+import Project from '../models/Project.model'
+import Task from '../models/Task.model'
 
 
 export const createUser = async (req: Request, res: Response) => {
@@ -53,13 +57,9 @@ export const createUser = async (req: Request, res: Response) => {
 
 export const getUserById = async (req: Request, res: Response) => {
     try {
-        const validtoken = jwt.verify(req.cookies.token, process.env.JWT_SECRET) as jwt.JwtPayload
-        if(!validtoken) {
-            res.status(401).json({success: false, error: 'Unauthorized request, invalid token.'})
-            return 
-        }
+        const userId = req.user.id
 
-        const user = await User.findByPk(validtoken.id)
+        const user = await User.findByPk(userId)
         if(!user) {
             res.status(404).json({success: false, error: 'User not found'})
             return
@@ -80,19 +80,15 @@ export const getUserById = async (req: Request, res: Response) => {
 export const verifySession = async (req: Request, res: Response) => {
     try {
         // read and verify cookies
-        const tokenLS = req.body.token
+        const authHeader = req.headers.authorization
+        const tokenHeader = authHeader && authHeader.split(' ')[1]
 
-        if(!tokenLS) {
+        if(!tokenHeader) {
             res.status(401).json({success: false, message: 'Unauthorized user'})
             return
         }
-        // if(!req.cookies.token) {
-        //     res.status(401).json({success: false, message: 'Unauthorized user'})
-        //     return
-        // }
 
-        // verify jwt
-        const token = jwt.verify(tokenLS, process.env.JWT_SECRET) as jwt.JwtPayload
+        const token = jwt.verify(tokenHeader, process.env.JWT_SECRET) as jwt.JwtPayload
         if(!token) {
             res.status(401).json({success: false, message: 'Unauthorized request, invalid token.'})
             return 
@@ -106,7 +102,7 @@ export const verifySession = async (req: Request, res: Response) => {
         }
 
         //compare user token with cookies token
-        if(user.token !== req.cookies.token) {
+        if(user.token !== tokenHeader) {
             res.status(401).json({success: false, message: 'Unauthorized request, not access'})
             return
         }
@@ -168,31 +164,7 @@ export const logingUser = async (req: Request, res: Response) => {
 
 export const logoutUser = async (req: Request, res: Response) => {
     try {
-        // read and verify cookies
-        if(!req.cookies.token) {
-            res.status(401).json({success: false, message: 'Unauthorized user'})
-            return
-        }
-
-        // verify jwt
-        const token = jwt.verify(req.cookies.token, process.env.JWT_SECRET) as jwt.JwtPayload
-        if(!token) {
-            res.status(401).json({success: false, message: 'Unauthorized request, invalid token.'})
-            return 
-        }
-
-        // look for user
-        const user = await User.findByPk(token.id)
-        if(!user) {
-            res.status(404).json({success: false, message: 'User not found'})
-            return
-        }
-
-        //compare user token with cookies token
-        if(user.token !== req.cookies.token) {
-            res.status(401).json({success: false, message: 'Unauthorized request, not access'})
-            return
-        }
+        const user = req.user
 
         user.token = null
         await user.save()
@@ -210,6 +182,8 @@ export const logoutUser = async (req: Request, res: Response) => {
 
 export const updateProfile = async (req: Request, res: Response) => {
     try {
+
+        const userIdReq = req.user.id
         
         if( !req.body.name && !req.body.email && !req.body.password) {
             res.status(400).json({success: false, error: 'Data to update is missing'})
@@ -217,7 +191,7 @@ export const updateProfile = async (req: Request, res: Response) => {
         }
         const { name, email, password,  } = req.body
         
-        const userId = jwt.verify(req.cookies.token, process.env.JWT_SECRET) as jwt.JwtPayload
+        const userId = jwt.verify(userIdReq, process.env.JWT_SECRET) as jwt.JwtPayload
         if(!userId) {
             res.status(401).json({success: false, error: 'Unauthorized request, invalid token.'})
             return
@@ -264,7 +238,8 @@ export const updateProfile = async (req: Request, res: Response) => {
 
 export const deleteUser = async (req: Request, res: Response) => {
     try {
-        const token = jwt.verify(req.cookies.token, process.env.JWT_SECRET) as jwt.JwtPayload
+        const tokenLS = req.body.token
+        const token = jwt.verify(tokenLS, process.env.JWT_SECRET) as jwt.JwtPayload
         if(!token) {
             res.status(401).json({success: false, error: 'Unauthorized request, invalid token.'})
             return
@@ -284,5 +259,23 @@ export const deleteUser = async (req: Request, res: Response) => {
     } catch (error) {
         console.log('[ERROR_DELETEUSER]', error.message)
         res.status(500).json({success: false, error: 'Error deleting user.'})
+    }
+}
+
+export const cleanDataUser = async (req: Request, res: Response) => {
+    try {
+        const userId = req.user.id
+        // clean tasks, tags, projects and user data
+        await TaskTag.destroy({where: {userId}})
+        await Tag.destroy({where: {userId}})
+        await Project.destroy({where: {userId}})
+        await Task.destroy({where: {userId}})
+
+        res.status(200).json({success: true, message: 'User data cleaned.'})
+        
+    } catch (error) {
+        console.log('[ERROR_CLEANDATAUSER]', error.message)
+        res.status(500).json({success: false, error: 'Error cleaning user data'})
+        
     }
 }
