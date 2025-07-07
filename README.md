@@ -22,6 +22,11 @@ Full-stack web application designed for efficient management of personal and pro
 ## 🚀 Online Demo
 
 [Live App todo-app-v5-five.vercel.app](https://todo-app-v5-five.vercel.app/) 
+
+### Demo Credentials
+- **Email:** user@user.com
+- **Password:** 12345678
+
 ## ✨ Key Features
 
 - 📝 **Complete Task Management:** Create, read, update, and delete tasks.
